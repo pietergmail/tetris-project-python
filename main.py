@@ -45,7 +45,7 @@ while not done:
             done = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                game.rotate()
+                game.move_drop()
             if event.key == pygame.K_DOWN:
                 pressing_down = True
             if event.key == pygame.K_LEFT:
@@ -53,7 +53,7 @@ while not done:
             if event.key == pygame.K_RIGHT:
                 game.move_side(1)
             if event.key == pygame.K_SPACE:
-                game.move_drop()
+                game.rotate()
             if event.key == pygame.K_ESCAPE:
                 game.__init__(20, 10)
 
