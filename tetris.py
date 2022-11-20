@@ -78,7 +78,7 @@ class Tetris:
         for i in range(4):
             for j in range(4):
                 if i * 4 + j in self.figure.image():
-                    self.field[i + self.figure.y][j + self.figure.x] = self.figure.color
+                    self.field[i + self.figure.y][j + self.figure.x] = self.figure.piece.color
         self.full_line()
         self.new_figure()
         if self.collision():
@@ -91,9 +91,10 @@ class Tetris:
         if self.collision():
             self.figure.x = old_x
 
-    # rotate the piece
+    # rotate the piece / currently broken
     def rotate(self):
         old_rotation = self.figure.rotation
         self.figure.rotate()
+        print(self.figure.rotation)
         if self.collision():
             self.figure.rotation = old_rotation

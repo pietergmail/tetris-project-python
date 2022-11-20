@@ -45,7 +45,7 @@ while not done:
             done = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                game.rotate()
+                game.move_drop()
             if event.key == pygame.K_DOWN:
                 pressing_down = True
             if event.key == pygame.K_LEFT:
@@ -53,7 +53,7 @@ while not done:
             if event.key == pygame.K_RIGHT:
                 game.move_side(1)
             if event.key == pygame.K_SPACE:
-                game.move_drop()
+                game.rotate()
             if event.key == pygame.K_ESCAPE:
                 game.__init__(20, 10)
 
@@ -79,7 +79,7 @@ while not done:
             for j in range(4):
                 p = i * 4 + j
                 if p in game.figure.image():
-                    pygame.draw.rect(screen, figure.colors[game.figure.color],
+                    pygame.draw.rect(screen, figure.colors[game.figure.piece.color],
                                      [game.x + game.zoom * (j + game.figure.x) + 1,
                                       game.y + game.zoom * (i + game.figure.y) + 1,
                                       game.zoom - 2, game.zoom - 2])
