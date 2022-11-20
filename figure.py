@@ -2,13 +2,14 @@ import random
 
 # rgb color ranges
 colors = [
-    (255, 111, 0),  # orange
+    (255, 111, 0),  # orange, borken for some reason, game doesn't like 0 value
     (9, 0, 255),  # dark blue
     (0, 255, 247),  # light blue
     (255, 255, 0),  # yellow
     (80, 134, 22),  # green
     (180, 34, 22),  # red
-    (171, 0, 255), # purple
+    (171, 0, 255),  # purple
+    (255, 111, 0),  # orange
 ]
 
 
@@ -34,7 +35,7 @@ class Figure:
     figures = [
         Piece(2, I_piece),
         Piece(6, T_piece),
-        Piece(0, L_piece),
+        Piece(7, L_piece),
         Piece(1, J_piece),
         Piece(3, O_piece),
         Piece(5, S_piece),
