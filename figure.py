@@ -2,39 +2,56 @@ import random
 
 # rgb color ranges
 colors = [
-    (0, 0, 0),  # black
-    (120, 37, 179),  # purple
-    (100, 179, 179),  # light blue
-    (80, 34, 22),  # brown
+    (255, 111, 0),  # orange
+    (9, 0, 255),  # dark blue
+    (0, 255, 247),  # light blue
+    (255, 255, 0),  # yellow
     (80, 134, 22),  # green
     (180, 34, 22),  # red
-    (180, 34, 122),  # pink
+    (171, 0, 255), # purple
 ]
+
+
+# official names from https://tetris.fandom.com/wiki/Tetromino
+I_piece = [[1, 5, 9, 13], [4, 5, 6, 7]]
+T_piece = [[1, 4, 5, 6], [1, 4, 5, 9], [1, 5, 9, 6], [4, 5, 6, 9]]
+L_piece = [[2, 6, 10, 11], [5, 6, 7, 3], [1, 2, 6, 10], [5, 9, 6, 7]]
+J_piece = [[1, 5, 9, 8], [4, 5, 6, 10], [1, 2, 5, 9], [0, 4, 5, 6]]
+O_piece = [[1, 2, 5, 6]]
+S_piece = [[4, 5, 1, 2], [0, 4, 5, 9]]
+Z_piece = [[0, 1, 5, 6], [1, 5, 4, 8]]
+
+
+class Piece:
+    def __init__(self, color, shape):
+        self.color = color
+        self.shape = shape
 
 
 # sets up the tetrimino pieces
 class Figure:
     # creates all the tetromino pieces
     figures = [
-        [[1, 5, 9, 13], [4, 5, 6, 7]],
-        [[1, 2, 5, 9], [0, 4, 5, 6], [1, 5, 9, 8], [4, 5, 6, 10]],
-        [[1, 2, 6, 10], [5, 6, 7, 9], [2, 6, 10, 11], [3, 5, 6, 7]],
-        [[1, 4, 5, 6], [1, 4, 5, 9], [4, 5, 6, 9], [1, 5, 6, 9]],
-        [[1, 2, 5, 6]],
+        Piece(2, I_piece[0]),
+        Piece(6, T_piece[0]),
+        Piece(0, L_piece[0]),
+        Piece(1, J_piece[0]),
+        Piece(3, O_piece[0]),
+        Piece(5, S_piece[0]),
+        Piece(4, Z_piece[0]),
     ]
 
     # Initialize all the data to the object
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.type = random.randint(0, len(self.figures) - 1)
-        self.color = random.randint(1, len(colors) - 1)
+        self.piece = self.figures[random.randint(0, len(self.figures) - 1)]
         self.rotation = 0
 
     # define the object
     def image(self):
-        return self.figures[self.type][self.rotation]
+        return self.piece
 
-    # rotate the object
+    # rotate the object // needs to be rewritten
     def rotate(self):
-        self.rotation = (self.rotation + 1) % len(self.figures[self.type])
+        self.rotation = (self.rotation + 1) % len(self.piece.shape)
