@@ -78,7 +78,7 @@ while not done:
         for i in range(4):
             for j in range(4):
                 p = i * 4 + j
-                if p in game.figure.image().shape:
+                if p in game.figure.image():
                     pygame.draw.rect(screen, figure.colors[game.figure.piece.color],
                                      [game.x + game.zoom * (j + game.figure.x) + 1,
                                       game.y + game.zoom * (i + game.figure.y) + 1,

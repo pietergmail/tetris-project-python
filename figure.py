@@ -32,13 +32,13 @@ class Piece:
 class Figure:
     # creates all the tetromino pieces
     figures = [
-        Piece(2, I_piece[0]),
-        Piece(6, T_piece[0]),
-        Piece(0, L_piece[0]),
-        Piece(1, J_piece[0]),
-        Piece(3, O_piece[0]),
-        Piece(5, S_piece[0]),
-        Piece(4, Z_piece[0]),
+        Piece(2, I_piece),
+        Piece(6, T_piece),
+        Piece(0, L_piece),
+        Piece(1, J_piece),
+        Piece(3, O_piece),
+        Piece(5, S_piece),
+        Piece(4, Z_piece),
     ]
 
     # Initialize all the data to the object
@@ -50,7 +50,7 @@ class Figure:
 
     # define the object
     def image(self):
-        return self.piece
+        return self.piece.shape[self.rotation]
 
     # rotate the object // needs to be rewritten
     def rotate(self):

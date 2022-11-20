@@ -36,7 +36,7 @@ class Tetris:
         collision = False
         for i in range(4):
             for j in range(4):
-                if i * 4 + j in self.figure.image().shape:
+                if i * 4 + j in self.figure.image():
                     if i + self.figure.y > self.height - 1 or \
                             j + self.figure.x > self.width - 1 or \
                             j + self.figure.x < 0 or \
@@ -77,7 +77,7 @@ class Tetris:
     def move_freeze(self):
         for i in range(4):
             for j in range(4):
-                if i * 4 + j in self.figure.image().shape:
+                if i * 4 + j in self.figure.image():
                     self.field[i + self.figure.y][j + self.figure.x] = self.figure.piece.color
         self.full_line()
         self.new_figure()
