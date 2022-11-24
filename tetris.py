@@ -91,7 +91,7 @@ class Tetris:
         if self.collision():
             self.figure.x = old_x
 
-    # rotate the piece / currently broken
+    # rotate the piece
     def rotate(self):
         old_rotation = self.figure.rotation
         self.figure.rotate()
