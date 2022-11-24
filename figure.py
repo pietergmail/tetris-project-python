@@ -1,4 +1,4 @@
-import random
+import rpiece
 
 # rgb color ranges
 colors = [
@@ -46,7 +46,7 @@ class Figure:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.piece = self.figures[random.randint(0, len(self.figures) - 1)]
+        self.piece = self.figures[rpiece.randomGenerator()]
         self.rotation = 0
 
     # define the object

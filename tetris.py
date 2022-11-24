@@ -95,6 +95,5 @@ class Tetris:
     def rotate(self):
         old_rotation = self.figure.rotation
         self.figure.rotate()
-        print(self.figure.rotation)
         if self.collision():
             self.figure.rotation = old_rotation
