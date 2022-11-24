@@ -27,6 +27,7 @@ pressing_down = False
 
 # main game loop
 while not done:
+    print(game.state)
     # if no figure, create a new one
     if game.figure is None:
         game.new_figure()
@@ -54,6 +55,9 @@ while not done:
                 game.move_side(1)
             if event.key == pygame.K_SPACE:
                 game.rotate()
+            if event.key == pygame.K_p:
+                print("pushed p")
+                game.pause()
             if event.key == pygame.K_ESCAPE:
                 game.__init__(20, 10)
 
@@ -86,16 +90,23 @@ while not done:
 
     # set screen variables
     font = pygame.font.SysFont('Calibri', 25, True, False)
-    font1 = pygame.font.SysFont('Calibri', 65, True, False)
+    font1 = pygame.font.SysFont('Calibri', 45, True, False)
+    font2 = pygame.font.SysFont('Calibri', 65, True, False)
     text = font.render("Score: " + str(game.score), True, BLACK)
-    text_game_over = font1.render("Game Over", True, (255, 125, 0))
-    text_game_over1 = font1.render("Press ESC", True, (255, 215, 0))
+    text_game_over = font2.render("Game Over", True, (255, 125, 0))
+    text_game_over1 = font2.render("Press ESC", True, (255, 215, 0))
+    text_game_paused = font1.render("Game Paused", True, (255, 125, 0))
+    text_game_paused1 = font1.render("Press p to start", True, (255, 215, 0))
 
     # refresh the screen and check game over
     screen.blit(text, [0, 0])
     if game.state == "gameover":
         screen.blit(text_game_over, [20, 200])
         screen.blit(text_game_over1, [25, 265])
+
+    if game.state == "paused":
+        screen.blit(text_game_paused, [45, 200])
+        screen.blit(text_game_paused1, [38, 265])
 
     # refresh screen and set clock speed
     pygame.display.flip()
