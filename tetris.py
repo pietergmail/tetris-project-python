@@ -5,7 +5,7 @@ import figure
 class Tetris:
     level = 2
     score = 0
-    state = "start"
+    state = ""
     field = []
     height = 0
     width = 0
@@ -97,3 +97,4 @@ class Tetris:
         self.figure.rotate()
         if self.collision():
             self.figure.rotation = old_rotation
+
