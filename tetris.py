@@ -5,7 +5,7 @@ import figure
 class Tetris:
     level = 2
     score = 0
-    state = "start"
+    state = ""
     field = []
     height = 0
     width = 0
@@ -20,7 +20,7 @@ class Tetris:
         self.width = width
         self.field = []
         self.score = 0
-        self.state = "paused"
+        self.state = "start"
         for i in range(height):
             new_line = []
             for j in range(width):
@@ -98,9 +98,3 @@ class Tetris:
         if self.collision():
             self.figure.rotation = old_rotation
 
-    def pause(self):
-        if self.state == "start":
-            print("it gets here correctly.")
-            self.state = "paused"
-        if self.state == "paused":
-            self.state = "start"

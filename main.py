@@ -5,6 +5,7 @@ import figure
 # Initialize the game engine
 pygame.init()
 
+paused = True
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -27,7 +28,13 @@ pressing_down = False
 
 # main game loop
 while not done:
-    print(game.state)
+    # check if game paused, with a gameover check
+    if game.state != "gameover":
+        if paused:
+            game.state = "paused"
+        else:
+            game.state = "start"
+
     # if no figure, create a new one
     if game.figure is None:
         game.new_figure()
@@ -56,8 +63,7 @@ while not done:
             if event.key == pygame.K_SPACE:
                 game.rotate()
             if event.key == pygame.K_p:
-                print("pushed p")
-                game.pause()
+                paused = not paused
             if event.key == pygame.K_ESCAPE:
                 game.__init__(20, 10)
 
@@ -101,9 +107,11 @@ while not done:
     # refresh the screen and check game over
     screen.blit(text, [0, 0])
     if game.state == "gameover":
+        paused = False  # pause the game
         screen.blit(text_game_over, [20, 200])
         screen.blit(text_game_over1, [25, 265])
 
+    # draw pause screen
     if game.state == "paused":
         screen.blit(text_game_paused, [45, 200])
         screen.blit(text_game_paused1, [38, 265])
