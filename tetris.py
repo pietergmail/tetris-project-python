@@ -116,7 +116,7 @@ class Tetris(object):
         lines = 0
         for i in range(1, self.height):
             zeros = 0
-            for j in range(self.height):
+            for j in range(self.width):
                 if self.field[i][j] == 0:
                     zeros += 1
             if zeros == 0:
