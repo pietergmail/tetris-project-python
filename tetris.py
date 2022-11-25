@@ -16,16 +16,21 @@ class Tetris:
 
     # initialize the tetris object
     def __init__(self, height, width):
+        self.done = False
         self.height = height
         self.width = width
         self.field = []
         self.score = 0
-        self.state = "start"
         for i in range(height):
             new_line = []
             for j in range(width):
                 new_line.append(0)
             self.field.append(new_line)
+
+
+    def draw(self):
+        """Pass display surface to active state for drawing."""
+        self.state.draw(self.screen)
 
     # new random figure
     def new_figure(self):
