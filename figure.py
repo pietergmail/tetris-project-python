@@ -46,7 +46,7 @@ class Figure:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.piece = self.figures[rpiece.randomGenerator()]
+        self.piece = self.figures[rpiece.randomgenerator()]
         self.rotation = 0
 
     # define the object

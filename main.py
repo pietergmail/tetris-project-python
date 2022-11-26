@@ -1,123 +1,235 @@
+import sys
 import pygame
-import tetris
+import pygame.display
+
 import figure
+import tetris
 
-# Initialize the game engine
-pygame.init()
-
-paused = True
-# Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
 
-# define screen
-size = (400, 500)
-screen = pygame.display.set_mode(size)
-
-# set name
-pygame.display.set_caption("Tetris")
-
-# Loop until the user clicks the close button.
-done = False
 clock = pygame.time.Clock()
-fps = 25
-game = tetris.Tetris(20, 10)
-counter = 0
-pressing_down = False
+fps = 60
 
-# main game loop
-while not done:
-    # check if game paused, with a gameover check
-    if game.state != "gameover":
-        if paused:
-            game.state = "paused"
-        else:
-            game.state = "start"
 
-    # if no figure, create a new one
-    if game.figure is None:
-        game.new_figure()
-    counter += 1
-    if counter > 100000:
-        counter = 0
+class GameState(object):
+    """
+    Parent class for individual game states to inherit from.
+    """
 
-    # set
-    if counter % (fps // game.level // 2) == 0 or pressing_down:
-        if game.state == "start":
-            game.move_down()
+    def __init__(self):
+        self.done = False
+        self.quit = False
+        self.next_state = None
+        self.screen_rect = pygame.display.get_surface().get_rect()
+        self.persist = {}
+        self.font = pygame.font.Font(None, 24)
 
-    # check inputs
-    for event in pygame.event.get():
+    def startup(self, persistent):
+        """
+        Called when a state resumes being active.
+        Allows information to be passed between states.
+
+        persistent: a dict passed from state to state
+        """
+        self.persist = persistent
+
+    def get_event(self, event):
+        """
+        Handle a single event passed by the Game object.
+        """
+        pass
+
+    def update(self, dt):
+        """
+        Update the state. Called by the Game object once
+        per frame.
+
+        dt: time since last frame
+        """
+        pass
+
+    def draw(self, surface):
+        """
+        Draw everything to the screen.
+        """
+        pass
+
+
+class TitleScreen(GameState):
+    def __init__(self):
+        super(TitleScreen, self).__init__()
+        self.title = self.font.render("Python tetris.py", True, pygame.Color("dodgerblue"))
+        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.persist["screen_color"] = "black"
+        self.next_state = "GAMEPLAY"
+
+    # continue on any button press
+    def get_event(self, event):
         if event.type == pygame.QUIT:
-            done = True
+            self.quit = True
+        elif event.type == pygame.KEYUP:
+            self.persist["screen_color"] = "gold"
+            self.done = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.persist["screen_color"] = "dodgerblue"
+            self.done = True
+
+    # renders the screen
+    def draw(self, surface):
+        surface.fill(pygame.Color("black"))
+        surface.blit(self.title, self.title_rect)
+
+
+class PauseScreen(GameState):
+    def __init__(self):
+        super(PauseScreen, self).__init__()
+        self.title = self.font.render("Paused, press r to resume", True, pygame.Color("dodgerblue"))
+        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.persist["screen_color"] = "black"
+        self.next_state = "GAMEPLAY"
+
+    # continue on any button press
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.quit = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                self.done = True
+                game.flip_state()
+
+    # renders the screen
+    def draw(self, surface):
+        surface.fill(pygame.Color("black"))
+        surface.blit(self.title, self.title_rect)
+
+
+class GameOverScreen(GameState):
+    def __init__(self):
+        super(GameOverScreen, self).__init__()
+        self.title = self.font.render("Game Over", True, pygame.Color("dodgerblue"))
+        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.persist["screen_color"] = "black"
+
+    # continue on any button press
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.quit = True
+        elif event.type == pygame.KEYDOWN:
+            self.quit = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.quit = True
+
+    # renders the screen
+    def draw(self, surface):
+        surface.fill(pygame.Color("black"))
+        surface.blit(self.title, self.title_rect)
+
+
+class Gameplay(GameState):
+    def __init__(self):
+        super(Gameplay, self).__init__()
+        self.rect = pygame.Rect((0, 0), (128, 128))
+        self.x_velocity = 1
+        self.next_state = "GAMEOVER"
+
+    def startup(self, persistent):
+        self.persists = persistent
+
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.quit = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 game.move_drop()
             if event.key == pygame.K_DOWN:
-                pressing_down = True
+                game.pressing_down = True
             if event.key == pygame.K_LEFT:
                 game.move_side(-1)
             if event.key == pygame.K_RIGHT:
                 game.move_side(1)
             if event.key == pygame.K_SPACE:
                 game.rotate()
-            if event.key == pygame.K_p:
-                paused = not paused
             if event.key == pygame.K_ESCAPE:
-                game.__init__(20, 10)
+                self.done = True
+            if event.key == pygame.K_p:
+                self.next_state = "PAUSED"
+                self.done = True
 
-    # check if key is held down, used to change dropping speed
-    if event.type == pygame.KEYUP:
+        # check if key is held down, used to change dropping speed
+        if event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN:
-                pressing_down = False
+                game.pressing_down = False
 
-    # set background color
-    screen.fill(WHITE)
+    def update(self, dt):
+        # move piece down every +- 200 ticks
+        game.time_elapsed += dt
+        if game.time_elapsed/game.level > 200 or game.pressing_down:
+            game.time_elapsed = 0
+            game.move_down()
 
-    # draw the game screen and the objects
-    for i in range(game.height):
-        for j in range(game.width):
-            pygame.draw.rect(screen, GRAY, [game.x + game.zoom * j, game.y + game.zoom * i, game.zoom, game.zoom], 1)
-            if game.field[i][j] > 0:
-                pygame.draw.rect(screen, figure.colors[game.field[i][j]],
-                                 [game.x + game.zoom * j + 1, game.y + game.zoom * i + 1, game.zoom - 2, game.zoom - 1])
+        self.rect.move_ip(self.x_velocity, 0)
+        if (self.rect.right > self.screen_rect.right
+                or self.rect.left < self.screen_rect.left):
+            self.x_velocity *= -1
+            self.rect.clamp_ip(self.screen_rect)
 
-    # create the game screen
-    if game.figure is not None:
-        for i in range(4):
-            for j in range(4):
-                p = i * 4 + j
-                if p in game.figure.image():
-                    pygame.draw.rect(screen, figure.colors[game.figure.piece.color],
-                                     [game.x + game.zoom * (j + game.figure.x) + 1,
-                                      game.y + game.zoom * (i + game.figure.y) + 1,
-                                      game.zoom - 2, game.zoom - 2])
+    def draw(self, surface):
+        # set background color
+        screen.fill(WHITE)
 
-    # set screen variables
-    font = pygame.font.SysFont('Calibri', 25, True, False)
-    font1 = pygame.font.SysFont('Calibri', 45, True, False)
-    font2 = pygame.font.SysFont('Calibri', 65, True, False)
-    text = font.render("Score: " + str(game.score), True, BLACK)
-    text_game_over = font2.render("Game Over", True, (255, 125, 0))
-    text_game_over1 = font2.render("Press ESC", True, (255, 215, 0))
-    text_game_paused = font1.render("Game Paused", True, (255, 125, 0))
-    text_game_paused1 = font1.render("Press p to start", True, (255, 215, 0))
+        # draw the game screen and the objects
+        for i in range(game.height):
+            for j in range(game.width):
+                pygame.draw.rect(screen, GRAY, [game.x + game.zoom * j, game.y + game.zoom * i, game.zoom, game.zoom],
+                                 1)
+                if game.field[i][j] > 0:
+                    pygame.draw.rect(screen, figure.colors[game.field[i][j]],
+                                     [game.x + game.zoom * j + 1, game.y + game.zoom * i + 1, game.zoom - 2,
+                                      game.zoom - 1])
 
-    # refresh the screen and check game over
-    screen.blit(text, [0, 0])
-    if game.state == "gameover":
-        paused = False  # pause the game
-        screen.blit(text_game_over, [20, 200])
-        screen.blit(text_game_over1, [25, 265])
+        # create the game screen
+        if game.figure is not None:
+            for i in range(4):
+                for j in range(4):
+                    p = i * 4 + j
+                    if p in game.figure.image():
+                        pygame.draw.rect(screen, figure.colors[game.figure.piece.color],
+                                         [game.x + game.zoom * (j + game.figure.x) + 1,
+                                          game.y + game.zoom * (i + game.figure.y) + 1,
+                                          game.zoom - 2, game.zoom - 2])
 
-    # draw pause screen
-    if game.state == "paused":
-        screen.blit(text_game_paused, [45, 200])
-        screen.blit(text_game_paused1, [38, 265])
+        # set screen variables
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        font1 = pygame.font.SysFont('Calibri', 45, True, False)
+        font2 = pygame.font.SysFont('Calibri', 65, True, False)
+        text = font.render("Score: " + str(game.score), True, BLACK)
+        text_game_over = font2.render("Game Over", True, (255, 125, 0))
+        text_game_over1 = font2.render("Press ESC", True, (255, 215, 0))
+        text_game_paused = font1.render("Game Paused", True, (255, 125, 0))
+        text_game_paused1 = font1.render("Press p to start", True, (255, 215, 0))
 
-    # refresh screen and set clock speed
-    pygame.display.flip()
-    clock.tick(fps)
+        screen.blit(text, [0, 0])
 
-pygame.quit()
+        # check if game over
+        if game.state == "gameover":
+            screen.blit(text_game_over, [20, 200])
+            screen.blit(text_game_over1, [25, 265])
+
+        pygame.display.flip()
+
+
+if __name__ == "__main__":
+    pygame.init()
+    size = (400, 500)
+    screen = pygame.display.set_mode(size)
+    pygame.display.set_caption("tetris.py")
+    states = {"TITLESCREEN": TitleScreen(),
+              "GAMEPLAY": Gameplay(),
+              "GAMEOVER": GameOverScreen(),
+              "PAUSED": PauseScreen()}
+    game = tetris.Tetris(10, 20, screen, states, "TITLESCREEN")
+    game.run()
+    pygame.quit()
+    sys.exit()
