@@ -1,5 +1,5 @@
 import sys
-import pygame as pg
+import pygame
 import pygame.display
 
 import figure
@@ -22,9 +22,9 @@ class GameState(object):
         self.done = False
         self.quit = False
         self.next_state = None
-        self.screen_rect = pg.display.get_surface().get_rect()
+        self.screen_rect = pygame.display.get_surface().get_rect()
         self.persist = {}
-        self.font = pg.font.Font(None, 24)
+        self.font = pygame.font.Font(None, 24)
 
     def startup(self, persistent):
         """
@@ -60,69 +60,112 @@ class GameState(object):
 class TitleScreen(GameState):
     def __init__(self):
         super(TitleScreen, self).__init__()
-        self.title = self.font.render("Python tetris.py", True, pg.Color("dodgerblue"))
+        self.title = self.font.render("Python tetris.py", True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.persist["screen_color"] = "black"
         self.next_state = "GAMEPLAY"
 
     # continue on any button press
     def get_event(self, event):
-        if event.type == pg.QUIT:
+        if event.type == pygame.QUIT:
             self.quit = True
-        elif event.type == pg.KEYUP:
+        elif event.type == pygame.KEYUP:
             self.persist["screen_color"] = "gold"
             self.done = True
-        elif event.type == pg.MOUSEBUTTONUP:
+        elif event.type == pygame.MOUSEBUTTONUP:
             self.persist["screen_color"] = "dodgerblue"
             self.done = True
 
     # renders the screen
     def draw(self, surface):
-        surface.fill(pg.Color("black"))
+        surface.fill(pygame.Color("black"))
+        surface.blit(self.title, self.title_rect)
+
+
+class PauseScreen(GameState):
+    def __init__(self):
+        super(PauseScreen, self).__init__()
+        self.title = self.font.render("Paused, press r to resume", True, pygame.Color("dodgerblue"))
+        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.persist["screen_color"] = "black"
+        self.next_state = "GAMEPLAY"
+
+    # continue on any button press
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.quit = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                self.done = True
+                game.flip_state()
+
+    # renders the screen
+    def draw(self, surface):
+        surface.fill(pygame.Color("black"))
+        surface.blit(self.title, self.title_rect)
+
+
+class GameOverScreen(GameState):
+    def __init__(self):
+        super(GameOverScreen, self).__init__()
+        self.title = self.font.render("Game Over", True, pygame.Color("dodgerblue"))
+        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.persist["screen_color"] = "black"
+
+    # continue on any button press
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.quit = True
+        elif event.type == pygame.KEYDOWN:
+            self.quit = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.quit = True
+
+    # renders the screen
+    def draw(self, surface):
+        surface.fill(pygame.Color("black"))
         surface.blit(self.title, self.title_rect)
 
 
 class Gameplay(GameState):
     def __init__(self):
         super(Gameplay, self).__init__()
-        self.rect = pg.Rect((0, 0), (128, 128))
+        self.rect = pygame.Rect((0, 0), (128, 128))
         self.x_velocity = 1
+        self.next_state = "GAMEOVER"
 
     def startup(self, persistent):
-        self.persist = persistent
-        color = self.persist["screen_color"]
-        self.screen_color = pg.Color(color)
-        if color == "dodgerblue":
-            text = "You clicked the mouse to get here"
-        elif color == "gold":
-            text = "You pressed a key to get here"
-        self.title = self.font.render(text, True, pg.Color("gray10"))
-        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.persists = persistent
 
     def get_event(self, event):
-        if event.type == pg.QUIT:
-            done = True
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_UP:
+        if event.type == pygame.QUIT:
+            self.quit = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
                 game.move_drop()
-            if event.key == pg.K_DOWN:
-                pressing_down = True
-            if event.key == pg.K_LEFT:
+            if event.key == pygame.K_DOWN:
+                game.pressing_down = True
+            if event.key == pygame.K_LEFT:
                 game.move_side(-1)
-            if event.key == pg.K_RIGHT:
+            if event.key == pygame.K_RIGHT:
                 game.move_side(1)
-            if event.key == pg.K_SPACE:
+            if event.key == pygame.K_SPACE:
                 game.rotate()
+            if event.key == pygame.K_ESCAPE:
+                self.done = True
+            if event.key == pygame.K_p:
+                self.next_state = "PAUSED"
+                self.done = True
 
         # check if key is held down, used to change dropping speed
-        if event.type == pg.KEYUP:
-            if event.key == pg.K_DOWN:
-                pressing_down = False
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_DOWN:
+                game.pressing_down = False
 
     def update(self, dt):
         # move piece down every +- 200 ticks
         game.time_elapsed += dt
-        if game.time_elapsed/game.level > 200:
+        if game.time_elapsed/game.level > 200 or game.pressing_down:
             game.time_elapsed = 0
             game.move_down()
 
@@ -152,45 +195,41 @@ class Gameplay(GameState):
                 for j in range(4):
                     p = i * 4 + j
                     if p in game.figure.image():
-                        pg.draw.rect(screen, figure.colors[game.figure.piece.color],
+                        pygame.draw.rect(screen, figure.colors[game.figure.piece.color],
                                          [game.x + game.zoom * (j + game.figure.x) + 1,
                                           game.y + game.zoom * (i + game.figure.y) + 1,
                                           game.zoom - 2, game.zoom - 2])
 
         # set screen variables
-        font = pg.font.SysFont('Calibri', 25, True, False)
-        font1 = pg.font.SysFont('Calibri', 45, True, False)
-        font2 = pg.font.SysFont('Calibri', 65, True, False)
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        font1 = pygame.font.SysFont('Calibri', 45, True, False)
+        font2 = pygame.font.SysFont('Calibri', 65, True, False)
         text = font.render("Score: " + str(game.score), True, BLACK)
         text_game_over = font2.render("Game Over", True, (255, 125, 0))
         text_game_over1 = font2.render("Press ESC", True, (255, 215, 0))
         text_game_paused = font1.render("Game Paused", True, (255, 125, 0))
         text_game_paused1 = font1.render("Press p to start", True, (255, 215, 0))
 
-        # refresh the screen and check game over
         screen.blit(text, [0, 0])
+
+        # check if game over
         if game.state == "gameover":
-            paused = False  # pause the game
             screen.blit(text_game_over, [20, 200])
             screen.blit(text_game_over1, [25, 265])
 
-        # draw pause screen
-        if game.state == "paused":
-            screen.blit(text_game_paused, [45, 200])
-            screen.blit(text_game_paused1, [38, 265])
-
-        # refresh screen and set clock speed
-        pg.display.flip()
+        pygame.display.flip()
 
 
 if __name__ == "__main__":
-    pg.init()
+    pygame.init()
     size = (400, 500)
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("tetris.py")
     states = {"TITLESCREEN": TitleScreen(),
-              "GAMEPLAY": Gameplay()}
+              "GAMEPLAY": Gameplay(),
+              "GAMEOVER": GameOverScreen(),
+              "PAUSED": PauseScreen()}
     game = tetris.Tetris(10, 20, screen, states, "TITLESCREEN")
     game.run()
-    pg.quit()
+    pygame.quit()
     sys.exit()

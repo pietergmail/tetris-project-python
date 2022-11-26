@@ -24,7 +24,7 @@ class Tetris(object):
     and its run method serves as the "game loop".
     """
 
-    def __init__(self, width, height, screen, statess, start_state):
+    def __init__(self, width, height, screen, states, start_state):
         """
         Initialize the Game object.
 
@@ -38,9 +38,9 @@ class Tetris(object):
         self.height = height
         self.field = []
         self.clock = pygame.time.Clock()
-        self.fps = 25
+        self.fps = 60
         self.score = 0
-        self.states = statess
+        self.states = states
         self.state_name = start_state
         self.state = self.states[self.state_name]
         for i in range(height):
@@ -74,8 +74,8 @@ class Tetris(object):
                 self.new_figure()
             dt = self.clock.tick(self.fps)
             self.event_loop()
-            self.update(dt)
             self.draw()
+            self.update(dt)
             pygame.display.update()
 
     def update(self, dt):
@@ -149,7 +149,9 @@ class Tetris(object):
         self.full_line()
         self.new_figure()
         if self.collision():
-            self.state = "gameover"
+            self.state.next_state = "GAMEOVER"
+            # not sure why, but just setting done = True doesn't work, so i just flip here
+            self.flip_state()
 
     # move left_right
     def move_side(self, dx):
