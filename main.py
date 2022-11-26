@@ -108,7 +108,7 @@ class PauseScreen(GameState):
 class GameOverScreen(GameState):
     def __init__(self):
         super(GameOverScreen, self).__init__()
-        self.title = self.font.render("Game Over", True, pygame.Color("dodgerblue"))
+        self.title = self.font.render("Game Over, press Escape to quit", True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.persist["screen_color"] = "black"
 
@@ -116,10 +116,9 @@ class GameOverScreen(GameState):
     def get_event(self, event):
         if event.type == pygame.QUIT:
             self.quit = True
-        elif event.type == pygame.KEYDOWN:
-            self.quit = True
-        elif event.type == pygame.MOUSEBUTTONUP:
-            self.quit = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                self.quit = True
 
     # renders the screen
     def draw(self, surface):
