@@ -178,7 +178,7 @@ class Gameplay(GameState):
         # set background color
         screen.fill(WHITE)
 
-        # draw the game screen and the objects
+        # draw the grid
         for i in range(game.height):
             for j in range(game.width):
                 pygame.draw.rect(screen, GRAY, [game.x + game.zoom * j, game.y + game.zoom * i, game.zoom, game.zoom],
@@ -188,10 +188,22 @@ class Gameplay(GameState):
                                      [game.x + game.zoom * j + 1, game.y + game.zoom * i + 1, game.zoom - 2,
                                       game.zoom - 1])
 
-        # draw the preview window
+        # draw the preview1 window
         for i in range(4):
             for j in range(3):
                 pygame.draw.rect(screen, GRAY, [320 + 20 * j, 60 + i * 20, game.zoom, game.zoom],
+                                 1)
+
+        # draw the preview2 window
+        for i in range(4):
+            for j in range(3):
+                pygame.draw.rect(screen, GRAY, [320 + 20 * j, 160 + i * 20, game.zoom, game.zoom],
+                                 1)
+
+        # draw the preview3 window
+        for i in range(4):
+            for j in range(3):
+                pygame.draw.rect(screen, GRAY, [320 + 20 * j, 260 + i * 20, game.zoom, game.zoom],
                                  1)
 
         # draw the figure on the screen
@@ -199,23 +211,38 @@ class Gameplay(GameState):
             for i in range(4):
                 for j in range(4):
                     p = i * 4 + j
-                    print(p)
                     if p in game.figure.image():
                         pygame.draw.rect(screen, figure.colors[game.figure.piece.color],
                                          [game.x + game.zoom * (j + game.figure.x) + 1,
                                           game.y + game.zoom * (i + game.figure.y) + 1,
                                           game.zoom - 2, game.zoom - 2])
 
-        # draw the preview figure
-        if game.nextfigure is not None:
+        # draw the preview figure1
+        if game.next_figure is not None:
             for i in range(4):
                 for j in range(3):
                     p = i * 4 + j
-                    if p in game.nextfigure.image():
-                        pygame.draw.rect(screen, figure.colors[game.nextfigure.piece.color],
+                    if p in game.next_figure.image():
+                        pygame.draw.rect(screen, figure.colors[game.next_figure.piece.color],
                                          [320 + 20 * j + 1, 60 + i * 20 + 1, game.zoom - 2, game.zoom - 2])
 
+        # draw the preview figure2
+        if game.next_figure2 is not None:
+            for i in range(4):
+                for j in range(3):
+                    p = i * 4 + j
+                    if p in game.next_figure2.image():
+                        pygame.draw.rect(screen, figure.colors[game.next_figure2.piece.color],
+                                         [320 + 20 * j + 1, 160 + i * 20 + 1, game.zoom - 2, game.zoom - 2])
 
+        # draw the preview figure3
+        if game.next_figure3 is not None:
+            for i in range(4):
+                for j in range(3):
+                    p = i * 4 + j
+                    if p in game.next_figure3.image():
+                        pygame.draw.rect(screen, figure.colors[game.next_figure3.piece.color],
+                                         [320 + 20 * j + 1, 260 + i * 20 + 1, game.zoom - 2, game.zoom - 2])
 
         # set screen variables
         font = pygame.font.SysFont('Calibri', 25, True, False)

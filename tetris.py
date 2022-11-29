@@ -15,7 +15,9 @@ class Tetris(object):
     y = 60
     zoom = 20
     figure = None
-    nextfigure = None
+    next_figure = None
+    next_figure2 = None
+    next_figure3 = None
     """
     A single instance of this class is responsible for
     managing which individual game state is active
@@ -43,7 +45,9 @@ class Tetris(object):
         self.score = 0
         self.states = states
         self.state_name = start_state
-        self.nextfigure = figure.Figure(3, 0)
+        self.next_figure = figure.Figure(3, 0)
+        self.next_figure2 = figure.Figure(3, 0)
+        self.next_figure3 = figure.Figure(3, 0)
         self.state = self.states[self.state_name]
         for i in range(height):
             new_line = []
@@ -98,8 +102,10 @@ class Tetris(object):
 
     # new random figure
     def new_figure(self):
-        self.figure = self.nextfigure
-        self.nextfigure = figure.Figure(3, 0)
+        self.figure = self.next_figure
+        self.next_figure = self.next_figure2
+        self.next_figure2 = self.next_figure3
+        self.next_figure3 = figure.Figure(3, 0)
 
     # collision check
     def collision(self):
