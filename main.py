@@ -181,6 +181,10 @@ class Gameplay(GameState):
         # draw the game screen and the objects
         for i in range(game.height):
             for j in range(game.width):
+                print("game y: " + str(game.x))
+                print("game zoom: " + str(game.zoom))
+                print("game i: " + str(j))
+                print("coordinates for drawing the screen: " + str(game.y + game.zoom * i))
                 pygame.draw.rect(screen, GRAY, [game.x + game.zoom * j, game.y + game.zoom * i, game.zoom, game.zoom],
                                  1)
                 if game.field[i][j] > 0:
@@ -188,7 +192,13 @@ class Gameplay(GameState):
                                      [game.x + game.zoom * j + 1, game.y + game.zoom * i + 1, game.zoom - 2,
                                       game.zoom - 1])
 
-        # create the game screen
+        # draw the preview window
+        for i in range(3):
+            for j in range(3):
+                pygame.draw.rect(screen, GRAY, [320 + 20 * j, 60 + i * 20, game.zoom, game.zoom],
+                                 1)
+
+        # draw the figure on the screen
         if game.figure is not None:
             for i in range(4):
                 for j in range(4):
@@ -210,11 +220,6 @@ class Gameplay(GameState):
         text_game_paused1 = font1.render("Press p to start", True, (255, 215, 0))
 
         screen.blit(text, [0, 0])
-
-        # check if game over
-        if game.state == "gameover":
-            screen.blit(text_game_over, [20, 200])
-            screen.blit(text_game_over1, [25, 265])
 
         pygame.display.flip()
 
