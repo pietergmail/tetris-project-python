@@ -181,10 +181,6 @@ class Gameplay(GameState):
         # draw the game screen and the objects
         for i in range(game.height):
             for j in range(game.width):
-                print("game y: " + str(game.x))
-                print("game zoom: " + str(game.zoom))
-                print("game i: " + str(j))
-                print("coordinates for drawing the screen: " + str(game.y + game.zoom * i))
                 pygame.draw.rect(screen, GRAY, [game.x + game.zoom * j, game.y + game.zoom * i, game.zoom, game.zoom],
                                  1)
                 if game.field[i][j] > 0:
@@ -193,7 +189,7 @@ class Gameplay(GameState):
                                       game.zoom - 1])
 
         # draw the preview window
-        for i in range(3):
+        for i in range(4):
             for j in range(3):
                 pygame.draw.rect(screen, GRAY, [320 + 20 * j, 60 + i * 20, game.zoom, game.zoom],
                                  1)
@@ -203,11 +199,23 @@ class Gameplay(GameState):
             for i in range(4):
                 for j in range(4):
                     p = i * 4 + j
+                    print(p)
                     if p in game.figure.image():
                         pygame.draw.rect(screen, figure.colors[game.figure.piece.color],
                                          [game.x + game.zoom * (j + game.figure.x) + 1,
                                           game.y + game.zoom * (i + game.figure.y) + 1,
                                           game.zoom - 2, game.zoom - 2])
+
+        # draw the preview figure
+        if game.nextfigure is not None:
+            for i in range(4):
+                for j in range(3):
+                    p = i * 4 + j
+                    if p in game.nextfigure.image():
+                        pygame.draw.rect(screen, figure.colors[game.nextfigure.piece.color],
+                                         [320 + 20 * j + 1, 60 + i * 20 + 1, game.zoom - 2, game.zoom - 2])
+
+
 
         # set screen variables
         font = pygame.font.SysFont('Calibri', 25, True, False)
