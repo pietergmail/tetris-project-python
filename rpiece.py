@@ -1,14 +1,13 @@
 import random
 
-
+bag = []
 # makes a simple 7-bag randomizer, makes tetris always solvable
 def randomgenerator():
-    bag = []
+    global bag
 
-    while True:
-        if len(bag) == 0:
-            bag = [0, 1, 2, 3, 4, 5, 6]
-            random.shuffle(bag)
-
-        return bag.pop()
+    if len(bag) == 0:
+        bag = [0, 1, 2, 3, 4, 5, 6]
+        random.shuffle(bag)
+    print(bag)
+    return bag.pop()
 
