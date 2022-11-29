@@ -150,6 +150,8 @@ class Gameplay(GameState):
                 game.move_side(1)
             if event.key == pygame.K_SPACE:
                 game.rotate()
+            if event.key == pygame.K_v:
+                game.revrotate()
             if event.key == pygame.K_ESCAPE:
                 self.done = True
             if event.key == pygame.K_p:
@@ -246,13 +248,7 @@ class Gameplay(GameState):
 
         # set screen variables
         font = pygame.font.SysFont('Calibri', 25, True, False)
-        font1 = pygame.font.SysFont('Calibri', 45, True, False)
-        font2 = pygame.font.SysFont('Calibri', 65, True, False)
         text = font.render("Score: " + str(game.score), True, BLACK)
-        text_game_over = font2.render("Game Over", True, (255, 125, 0))
-        text_game_over1 = font2.render("Press ESC", True, (255, 215, 0))
-        text_game_paused = font1.render("Game Paused", True, (255, 125, 0))
-        text_game_paused1 = font1.render("Press p to start", True, (255, 215, 0))
 
         screen.blit(text, [0, 0])
 

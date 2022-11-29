@@ -56,3 +56,6 @@ class Figure:
     # rotate the object // needs to be rewritten
     def rotate(self):
         self.rotation = (self.rotation + 1) % len(self.piece.shape)
+
+    def revrotate(self):
+        self.rotation = (self.rotation - 1) % len(self.piece.shape)
