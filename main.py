@@ -107,6 +107,7 @@ class PauseScreen(GameState):
 class GameOverScreen(GameState):
     def __init__(self):
         super(GameOverScreen, self).__init__()
+        self.score = self.font.render("Score: 0", True, pygame.Color("dodgerblue"))
         self.title = self.font.render("Game Over, press enter name: ", True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.persist["screen_color"] = "black"
@@ -120,13 +121,14 @@ class GameOverScreen(GameState):
         if event.type == pygame.QUIT:
             self.quit = True
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_RETURN:
                 self.quit = True
+                print(self.user_text)
                 # Check for backspace
             if event.key == pygame.K_BACKSPACE:
 
                 # get text input from 0 to -1 i.e. end.
-                self.user_text = self.user_text[:1]
+                self.user_text = self.user_text[:0]
 
                 # Unicode standard is used for string
                 # formation
@@ -142,6 +144,7 @@ class GameOverScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
+        surface.blit(self.score, [170, 200])
         surface.blit(self.title, self.title_rect)
 
         # basic font for user typed
@@ -165,6 +168,7 @@ class GameOverScreen(GameState):
         # display.flip() will update only a portion of the
         # screen to updated, not full area
         pygame.display.flip()
+
 
 class Gameplay(GameState):
     def __init__(self):
@@ -320,7 +324,7 @@ if __name__ == "__main__":
               "GAMEPLAY": Gameplay(),
               "GAMEOVER": GameOverScreen(),
               "PAUSED": PauseScreen()}
-    game = tetris.Tetris(10, 20, screen, states, "GAMEOVER")
+    game = tetris.Tetris(10, 20, screen, states, "TITLESCREEN")
     game.run()
     pygame.quit()
     sys.exit()
