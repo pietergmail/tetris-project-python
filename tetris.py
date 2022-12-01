@@ -14,10 +14,12 @@ class Tetris(object):
     x = 100
     y = 60
     zoom = 20
+    hold_pressed = False
     figure = None
     next_figure = None
     next_figure2 = None
     next_figure3 = None
+    hold_figure = None
     """
     A single instance of this class is responsible for
     managing which individual game state is active
@@ -106,6 +108,7 @@ class Tetris(object):
         self.next_figure = self.next_figure2
         self.next_figure2 = self.next_figure3
         self.next_figure3 = figure.Figure(3, 0)
+        self.hold_pressed = False
 
     # collision check
     def collision(self):
@@ -181,3 +184,17 @@ class Tetris(object):
         self.figure.revrotate()
         if self.collision():
             self.figure.rotation = old_rotation
+
+    def hold(self):
+        if not self.hold_pressed:
+            if self.hold_figure is None:
+                self.hold_figure = self.figure
+                self.new_figure()
+            else:
+                temp = self.figure
+                self.figure = self.hold_figure
+                self.hold_figure = temp
+
+            self.hold_pressed = True
+            self.figure.x = 3
+            self.figure.y = 0

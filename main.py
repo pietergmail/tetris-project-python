@@ -152,6 +152,8 @@ class Gameplay(GameState):
                 game.rotate()
             if event.key == pygame.K_v:
                 game.revrotate()
+            if event.key == pygame.K_c:
+                game.hold()
             if event.key == pygame.K_ESCAPE:
                 self.done = True
             if event.key == pygame.K_p:
@@ -208,6 +210,11 @@ class Gameplay(GameState):
                 pygame.draw.rect(screen, GRAY, [320 + 20 * j, 260 + i * 20, game.zoom, game.zoom],
                                  1)
 
+        # draw the hold window
+        for i in range(4):
+            for j in range(3):
+                pygame.draw.rect(screen, GRAY, [20 + 20 * j, 60 + i * 20, game.zoom, game.zoom],
+                                 1)
         # draw the figure on the screen
         if game.figure is not None:
             for i in range(4):
@@ -245,6 +252,15 @@ class Gameplay(GameState):
                     if p in game.next_figure3.image():
                         pygame.draw.rect(screen, figure.colors[game.next_figure3.piece.color],
                                          [320 + 20 * j + 1, 260 + i * 20 + 1, game.zoom - 2, game.zoom - 2])
+
+        # draw the preview figure3
+        if game.hold_figure is not None:
+            for i in range(4):
+                for j in range(3):
+                    p = i * 4 + j
+                    if p in game.hold_figure.image():
+                        pygame.draw.rect(screen, figure.colors[game.hold_figure.piece.color],
+                                         [20 + 20 * j + 1, 60 + i * 20 + 1, game.zoom - 2, game.zoom - 2])
 
         # set screen variables
         font = pygame.font.SysFont('Calibri', 25, True, False)
