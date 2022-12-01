@@ -12,7 +12,6 @@ GRAY = (128, 128, 128)
 clock = pygame.time.Clock()
 fps = 60
 
-
 class GameState(object):
     """
     Parent class for individual game states to inherit from.
@@ -108,9 +107,13 @@ class PauseScreen(GameState):
 class GameOverScreen(GameState):
     def __init__(self):
         super(GameOverScreen, self).__init__()
-        self.title = self.font.render("Game Over, press Escape to quit", True, pygame.Color("dodgerblue"))
+        self.title = self.font.render("Game Over, press enter name: ", True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.persist["screen_color"] = "black"
+        self.user_text = ""
+
+        # create rectangle
+        self.input_rect = pygame.Rect(150, 280, 140, 32)
 
     # continue on any button press
     def get_event(self, event):
@@ -119,12 +122,49 @@ class GameOverScreen(GameState):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.quit = True
+                # Check for backspace
+            if event.key == pygame.K_BACKSPACE:
+
+                # get text input from 0 to -1 i.e. end.
+                self.user_text = self.user_text[:1]
+
+                # Unicode standard is used for string
+                # formation
+            else:
+                self.user_text += event.unicode
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.input_rect.collidepoint(event.pos):
+                active = True
+            else:
+                active = False
 
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
         surface.blit(self.title, self.title_rect)
 
+        # basic font for user typed
+        base_font = pygame.font.Font(None, 32)
+
+        # draw rectangle and argument passed which should
+        # be on screen
+        pygame.draw.rect(screen, WHITE, self.input_rect)
+
+        text_surface = base_font.render(self.user_text, True, (0, 0, 0))
+
+        # render at position stated in arguments
+        screen.blit(text_surface, (self.input_rect.x + 5, self.input_rect.y + 5))
+
+        # set width of textfield so that text cannot get
+        # outside of user's text input
+        self.input_rect.w = max(100, text_surface.get_width() + 10)
+
+        text_surface = base_font.render(self.user_text, True, (255, 255, 255))
+
+        # display.flip() will update only a portion of the
+        # screen to updated, not full area
+        pygame.display.flip()
 
 class Gameplay(GameState):
     def __init__(self):
@@ -280,7 +320,7 @@ if __name__ == "__main__":
               "GAMEPLAY": Gameplay(),
               "GAMEOVER": GameOverScreen(),
               "PAUSED": PauseScreen()}
-    game = tetris.Tetris(10, 20, screen, states, "TITLESCREEN")
+    game = tetris.Tetris(10, 20, screen, states, "GAMEOVER")
     game.run()
     pygame.quit()
     sys.exit()
