@@ -80,6 +80,10 @@ class TitleScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
+        # Add background image to tile screen
+        titleImage = pygame.image.load("images/titleImage.jpg").convert()
+        titleImage = pygame.transform.scale(titleImage, (400, 500)) 
+        surface.blit(titleImage, ( 0,0))
         surface.blit(self.title, self.title_rect)
 
 
