@@ -112,7 +112,7 @@ class PauseScreen(GameState):
 class GameOverScreen(GameState):
     def __init__(self):
         super(GameOverScreen, self).__init__()
-        self.title = self.font.render("Game Over, press Escape to quit", True, pygame.Color("dodgerblue"))
+        self.title = self.font.render("press Escape to quit", True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.persist["screen_color"] = "black"
 
@@ -127,6 +127,9 @@ class GameOverScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
+        gameOverImage = pygame.image.load("images/gameOver.png").convert()
+        gameOverImage = pygame.transform.scale(gameOverImage, (400, 500)) 
+        surface.blit(gameOverImage, ( 0,0))
         surface.blit(self.title, self.title_rect)
 
 
@@ -185,6 +188,9 @@ class Gameplay(GameState):
     def draw(self, surface):
         # set background color
         screen.fill(WHITE)
+        backgroundImage = pygame.image.load("images/background.jpg").convert()
+        backgroundImage = pygame.transform.scale(backgroundImage, (400, 500)) 
+        surface.blit(backgroundImage, ( 0,0))
 
         # draw the grid
         for i in range(game.height):
@@ -268,7 +274,7 @@ class Gameplay(GameState):
 
         # set screen variables
         font = pygame.font.SysFont('Calibri', 25, True, False)
-        text = font.render("Score: " + str(game.score), True, BLACK)
+        text = font.render("Score: " + str(game.score), True, GRAY)
 
         screen.blit(text, [0, 0])
 
