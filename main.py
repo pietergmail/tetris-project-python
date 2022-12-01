@@ -12,6 +12,7 @@ GRAY = (128, 128, 128)
 clock = pygame.time.Clock()
 fps = 60
 
+
 class GameState(object):
     """
     Parent class for individual game states to inherit from.
@@ -107,7 +108,6 @@ class PauseScreen(GameState):
 class GameOverScreen(GameState):
     def __init__(self):
         super(GameOverScreen, self).__init__()
-        self.score = self.font.render("Score: 0", True, pygame.Color("dodgerblue"))
         self.title = self.font.render("Game Over, press enter name: ", True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.persist["screen_color"] = "black"
@@ -143,8 +143,10 @@ class GameOverScreen(GameState):
 
     # renders the screen
     def draw(self, surface):
+        scoretext = self.font.render("Score: " + str(score), True, pygame.Color("dodgerblue"))
+
         surface.fill(pygame.Color("black"))
-        surface.blit(self.score, [170, 200])
+        surface.blit(scoretext, [170, 200])
         surface.blit(self.title, self.title_rect)
 
         # basic font for user typed
@@ -163,8 +165,6 @@ class GameOverScreen(GameState):
         # outside of user's text input
         self.input_rect.w = max(100, text_surface.get_width() + 10)
 
-        text_surface = base_font.render(self.user_text, True, (255, 255, 255))
-
         # display.flip() will update only a portion of the
         # screen to updated, not full area
         pygame.display.flip()
@@ -178,7 +178,7 @@ class Gameplay(GameState):
         self.next_state = "GAMEOVER"
 
     def startup(self, persistent):
-        self.persists = persistent
+        self.persist = persistent
 
     def get_event(self, event):
         if event.type == pygame.QUIT:
@@ -312,11 +312,16 @@ class Gameplay(GameState):
 
         screen.blit(text, [0, 0])
 
+        # may need to use persist, haven't figured it out yet
+        global score
+        score = game.score
+
         pygame.display.flip()
 
 
 if __name__ == "__main__":
     pygame.init()
+    score = 0
     size = (400, 500)
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("tetris.py")
