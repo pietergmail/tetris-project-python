@@ -2,6 +2,7 @@ import sys
 import pygame
 import pygame.display
 
+import highScore
 import figure
 import tetris
 
@@ -105,25 +106,122 @@ class PauseScreen(GameState):
         surface.blit(self.title, self.title_rect)
 
 
-class GameOverScreen(GameState):
+class HigscoreScreen(GameState):
     def __init__(self):
-        super(GameOverScreen, self).__init__()
-        self.title = self.font.render("Game Over, press Escape to quit", True, pygame.Color("dodgerblue"))
-        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        super(HigscoreScreen, self).__init__()
+        self.title = self.font.render("HighScores: ", True, pygame.Color("dodgerblue"))
         self.persist["screen_color"] = "black"
+
+        # create rectangle
+        self.input_rect = pygame.Rect(150, 280, 140, 32)
 
     # continue on any button press
     def get_event(self, event):
         if event.type == pygame.QUIT:
             self.quit = True
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_RETURN:
                 self.quit = True
 
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
+        surface.blit(self.title, [160, 100, 240, 240])
+
+        # Get the highscores
+        scores = highScore.gethighscores()
+
+        # create scores text for the 10 entries
+        score1 = self.font.render("Name: " + scores[0].name + " score: " + str(scores[0].score), True, pygame.Color("dodgerblue"))
+        score2 = self.font.render("Name: " + scores[1].name + " score: " + str(scores[1].score), True, pygame.Color("dodgerblue"))
+        score3 = self.font.render("Name: " + scores[2].name + " score: " + str(scores[2].score), True, pygame.Color("dodgerblue"))
+        score4 = self.font.render("Name: " + scores[3].name + " score: " + str(scores[3].score), True, pygame.Color("dodgerblue"))
+        score5 = self.font.render("Name: " + scores[4].name + " score: " + str(scores[4].score), True, pygame.Color("dodgerblue"))
+        score6 = self.font.render("Name: " + scores[5].name + " score: " + str(scores[5].score), True, pygame.Color("dodgerblue"))
+        score7 = self.font.render("Name: " + scores[6].name + " score: " + str(scores[6].score), True, pygame.Color("dodgerblue"))
+        score8 = self.font.render("Name: " + scores[7].name + " score: " + str(scores[7].score), True, pygame.Color("dodgerblue"))
+        score9 = self.font.render("Name: " + scores[8].name + " score: " + str(scores[8].score), True, pygame.Color("dodgerblue"))
+        score10 = self.font.render("Name: " + scores[9].name + " score: " + str(scores[9].score), True, pygame.Color("dodgerblue"))
+
+        surface.blit(score1, [120, 120, 240, 240])
+        surface.blit(score2, [120, 140, 240, 240])
+        surface.blit(score3, [120, 160, 240, 240])
+        surface.blit(score4, [120, 180, 240, 240])
+        surface.blit(score5, [120, 200, 240, 240])
+        surface.blit(score6, [120, 220, 240, 240])
+        surface.blit(score7, [120, 240, 240, 240])
+        surface.blit(score8, [120, 260, 240, 240])
+        surface.blit(score9, [120, 280, 240, 240])
+        surface.blit(score10, [120, 300, 240, 240])
+        # display.flip() will update only a portion of the
+        # screen to updated, not full area
+        pygame.display.flip()
+
+
+class GameOverScreen(GameState):
+    def __init__(self):
+        super(GameOverScreen, self).__init__()
+        self.title = self.font.render("Game Over, press enter name: ", True, pygame.Color("dodgerblue"))
+        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.persist["screen_color"] = "black"
+        self.user_text = ""
+        self.next_state = "HIGHSCORE"
+
+        # create rectangle
+        self.input_rect = pygame.Rect(150, 280, 140, 32)
+
+    # continue on any button press
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.quit = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                highScore.addhighscore(self.user_text, score)
+                game.flip_state()
+                # Check for backspace
+            if event.key == pygame.K_BACKSPACE:
+
+                # get text input from 0 to -1 i.e. end.
+                self.user_text = self.user_text[:0]
+
+                # Unicode standard is used for string
+                # formation
+            else:
+                self.user_text += event.unicode
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.input_rect.collidepoint(event.pos):
+                active = True
+            else:
+                active = False
+
+    # renders the screen
+    def draw(self, surface):
+        scoretext = self.font.render("Score: " + str(score), True, pygame.Color("dodgerblue"))
+
+        surface.fill(pygame.Color("black"))
+        surface.blit(scoretext, [170, 200])
         surface.blit(self.title, self.title_rect)
+
+        # basic font for user typed
+        base_font = pygame.font.Font(None, 32)
+
+        # draw rectangle and argument passed which should
+        # be on screen
+        pygame.draw.rect(screen, WHITE, self.input_rect)
+
+        text_surface = base_font.render(self.user_text, True, (0, 0, 0))
+
+        # render at position stated in arguments
+        screen.blit(text_surface, (self.input_rect.x + 5, self.input_rect.y + 5))
+
+        # set width of textfield so that text cannot get
+        # outside of user's text input
+        self.input_rect.w = max(100, text_surface.get_width() + 10)
+
+        # display.flip() will update only a portion of the
+        # screen to updated, not full area
+        pygame.display.flip()
 
 
 class Gameplay(GameState):
@@ -134,7 +232,7 @@ class Gameplay(GameState):
         self.next_state = "GAMEOVER"
 
     def startup(self, persistent):
-        self.persists = persistent
+        self.persist = persistent
 
     def get_event(self, event):
         if event.type == pygame.QUIT:
@@ -268,18 +366,24 @@ class Gameplay(GameState):
 
         screen.blit(text, [0, 0])
 
+        # may need to use persist, haven't figured it out yet
+        global score
+        score = game.score
+
         pygame.display.flip()
 
 
 if __name__ == "__main__":
     pygame.init()
+    score = 0
     size = (400, 500)
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("tetris.py")
     states = {"TITLESCREEN": TitleScreen(),
               "GAMEPLAY": Gameplay(),
               "GAMEOVER": GameOverScreen(),
-              "PAUSED": PauseScreen()}
+              "PAUSED": PauseScreen(),
+              "HIGHSCORE": HigscoreScreen()}
     game = tetris.Tetris(10, 20, screen, states, "TITLESCREEN")
     game.run()
     pygame.quit()
