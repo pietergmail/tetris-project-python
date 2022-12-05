@@ -1,4 +1,3 @@
-import configparser
 import sys
 import pygame
 import pygame.display
@@ -28,9 +27,11 @@ class GameState(object):
         self.next_state = None
         self.screen_rect = pygame.display.get_surface().get_rect()
         self.persist = {}
-        self.font = pygame.font.Font(None, 24)
+        self.titleFont = pygame.font.Font('fonts/ka1.ttf', 24)
+        self.font = pygame.font.Font('fonts/Open 24 Display St.ttf', 24)
 
-    def startup(self, persistent):
+
+def startup(self, persistent):
         """
         Called when a state resumes being active.
         Allows information to be passed between states.
@@ -64,7 +65,7 @@ class GameState(object):
 class TitleScreen(GameState):
     def __init__(self):
         super(TitleScreen, self).__init__()
-        self.title = self.font.render("Python tetris.py", True, pygame.Color("dodgerblue"))
+        self.title = self.titleFont.render("Python tetris.py", True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.persist["screen_color"] = "black"
         self.next_state = "GAMEPLAY"
@@ -93,8 +94,9 @@ class TitleScreen(GameState):
         surface.fill(pygame.Color("black"))
         # Add background image to tile screen
         titleImage = pygame.image.load("images/titleImage.jpg").convert()
-        titleImage = pygame.transform.scale(titleImage, (400, 500)) 
+        titleImage = pygame.transform.scale(titleImage, (400, 500))
         surface.blit(titleImage, ( 0,0))
+
         surface.blit(self.title, self.title_rect)
 
 
@@ -119,6 +121,9 @@ class PauseScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
+        pauseImage = pygame.image.load("images/titleImage.jpg").convert()
+        pauseImage = pygame.transform.scale(pauseImage, (400, 500))
+        surface.blit(pauseImage, ( 0,0))
         surface.blit(self.title, self.title_rect)
 
 
@@ -142,33 +147,22 @@ class HigscoreScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
-        surface.blit(self.title, [160, 100, 240, 240])
+        titleImage = pygame.image.load("images/titleImage.jpg").convert()
+        titleImage = pygame.transform.scale(titleImage, (400, 500))
+        surface.blit(titleImage, ( 0,0))
+        surface.blit(self.title, self.title_rect)
 
         # Get the highscores
         scores = highScore.gethighscores()
 
         # create scores text for the 10 entries
-        score1 = self.font.render("Name: " + scores[0].name + " score: " + str(scores[0].score), True, pygame.Color("dodgerblue"))
-        score2 = self.font.render("Name: " + scores[1].name + " score: " + str(scores[1].score), True, pygame.Color("dodgerblue"))
-        score3 = self.font.render("Name: " + scores[2].name + " score: " + str(scores[2].score), True, pygame.Color("dodgerblue"))
-        score4 = self.font.render("Name: " + scores[3].name + " score: " + str(scores[3].score), True, pygame.Color("dodgerblue"))
-        score5 = self.font.render("Name: " + scores[4].name + " score: " + str(scores[4].score), True, pygame.Color("dodgerblue"))
-        score6 = self.font.render("Name: " + scores[5].name + " score: " + str(scores[5].score), True, pygame.Color("dodgerblue"))
-        score7 = self.font.render("Name: " + scores[6].name + " score: " + str(scores[6].score), True, pygame.Color("dodgerblue"))
-        score8 = self.font.render("Name: " + scores[7].name + " score: " + str(scores[7].score), True, pygame.Color("dodgerblue"))
-        score9 = self.font.render("Name: " + scores[8].name + " score: " + str(scores[8].score), True, pygame.Color("dodgerblue"))
-        score10 = self.font.render("Name: " + scores[9].name + " score: " + str(scores[9].score), True, pygame.Color("dodgerblue"))
+        i = 100
+        for x in range(10):
+            score = self.font.render("Name: " + scores[x].name + " score: " + str(scores[x].score), True, pygame.Color("dodgerblue"))
+            surface.blit(score, [95, i, 240, 240])
+            i = i+30
 
-        surface.blit(score1, [120, 120, 240, 240])
-        surface.blit(score2, [120, 140, 240, 240])
-        surface.blit(score3, [120, 160, 240, 240])
-        surface.blit(score4, [120, 180, 240, 240])
-        surface.blit(score5, [120, 200, 240, 240])
-        surface.blit(score6, [120, 220, 240, 240])
-        surface.blit(score7, [120, 240, 240, 240])
-        surface.blit(score8, [120, 260, 240, 240])
-        surface.blit(score9, [120, 280, 240, 240])
-        surface.blit(score10, [120, 300, 240, 240])
+
         # display.flip() will update only a portion of the
         # screen to updated, not full area
         pygame.display.flip()
@@ -177,14 +171,15 @@ class HigscoreScreen(GameState):
 class GameOverScreen(GameState):
     def __init__(self):
         super(GameOverScreen, self).__init__()
-        self.title = self.font.render("press Escape to quit", True, pygame.Color("dodgerblue"))
+        self.title = self.font.render("Enter your name to save your score:", True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.title_rect.y = 100
         self.persist["screen_color"] = "black"
         self.user_text = ""
         self.next_state = "HIGHSCORE"
 
         # create rectangle
-        self.input_rect = pygame.Rect(150, 280, 140, 32)
+        self.input_rect = pygame.Rect(150, 230, 140, 32)
 
     def startup(self, persistent):
         mixer.music.fadeout(2000)
@@ -217,13 +212,14 @@ class GameOverScreen(GameState):
     # renders the screen
     def draw(self, surface):
         scoretext = self.font.render("Score: " + str(score), True, pygame.Color("dodgerblue"))
-
         surface.fill(pygame.Color("black"))
         gameOverImage = pygame.image.load("images/gameOver.png").convert()
         gameOverImage = pygame.transform.scale(gameOverImage, (400, 500))
         surface.blit(gameOverImage, ( 0,0))
-        surface.blit(scoretext, [170, 200])
+        surface.blit(scoretext, [170, 10])
         surface.blit(self.title, self.title_rect)
+
+
 
         # basic font for user typed
         base_font = pygame.font.Font(None, 32)
@@ -237,9 +233,12 @@ class GameOverScreen(GameState):
         # render at position stated in arguments
         screen.blit(text_surface, (self.input_rect.x + 5, self.input_rect.y + 5))
 
+
         # set width of textfield so that text cannot get
         # outside of user's text input
         self.input_rect.w = max(100, text_surface.get_width() + 10)
+
+
 
         # display.flip() will update only a portion of the
         # screen to updated, not full area
