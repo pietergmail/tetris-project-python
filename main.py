@@ -5,6 +5,7 @@ import pygame.display
 from pygame import mixer
 
 import figure
+import highScore
 import tetris
 
 BLACK = (0, 0, 0)
