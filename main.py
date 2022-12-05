@@ -105,13 +105,11 @@ class PauseScreen(GameState):
         surface.blit(self.title, self.title_rect)
 
 
-class GameOverScreen(GameState):
+class HigscoreScreen(GameState):
     def __init__(self):
-        super(GameOverScreen, self).__init__()
-        self.title = self.font.render("Game Over, press enter name: ", True, pygame.Color("dodgerblue"))
-        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        super(HigscoreScreen, self).__init__()
+        self.title = self.font.render("HighScores: ", True, pygame.Color("dodgerblue"))
         self.persist["screen_color"] = "black"
-        self.user_text = ""
 
         # create rectangle
         self.input_rect = pygame.Rect(150, 280, 140, 32)
@@ -123,7 +121,36 @@ class GameOverScreen(GameState):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 self.quit = True
-                print(self.user_text)
+
+    # renders the screen
+    def draw(self, surface):
+        surface.fill(pygame.Color("black"))
+        surface.blit(self.title, [0, 0, 240, 240])
+
+        # display.flip() will update only a portion of the
+        # screen to updated, not full area
+        pygame.display.flip()
+
+
+class GameOverScreen(GameState):
+    def __init__(self):
+        super(GameOverScreen, self).__init__()
+        self.title = self.font.render("Game Over, press enter name: ", True, pygame.Color("dodgerblue"))
+        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.persist["screen_color"] = "black"
+        self.user_text = ""
+        self.next_state = "HIGHSCORE"
+
+        # create rectangle
+        self.input_rect = pygame.Rect(150, 280, 140, 32)
+
+    # continue on any button press
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.quit = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                game.flip_state()
                 # Check for backspace
             if event.key == pygame.K_BACKSPACE:
 
@@ -328,7 +355,8 @@ if __name__ == "__main__":
     states = {"TITLESCREEN": TitleScreen(),
               "GAMEPLAY": Gameplay(),
               "GAMEOVER": GameOverScreen(),
-              "PAUSED": PauseScreen()}
+              "PAUSED": PauseScreen(),
+              "HIGHSCORE": HigscoreScreen()}
     game = tetris.Tetris(10, 20, screen, states, "TITLESCREEN")
     game.run()
     pygame.quit()
