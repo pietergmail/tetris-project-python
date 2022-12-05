@@ -2,6 +2,7 @@ import sys
 import pygame
 import pygame.display
 
+import highScore
 import figure
 import tetris
 
@@ -125,8 +126,33 @@ class HigscoreScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
-        surface.blit(self.title, [0, 0, 240, 240])
+        surface.blit(self.title, [160, 100, 240, 240])
 
+        # Get the highscores
+        scores = highScore.gethighscores()
+
+        # create scores text for the 10 entries
+        score1 = self.font.render("Name: " + scores[0].name + " score: " + str(scores[0].score), True, pygame.Color("dodgerblue"))
+        score2 = self.font.render("Name: " + scores[1].name + " score: " + str(scores[1].score), True, pygame.Color("dodgerblue"))
+        score3 = self.font.render("Name: " + scores[2].name + " score: " + str(scores[2].score), True, pygame.Color("dodgerblue"))
+        score4 = self.font.render("Name: " + scores[3].name + " score: " + str(scores[3].score), True, pygame.Color("dodgerblue"))
+        score5 = self.font.render("Name: " + scores[4].name + " score: " + str(scores[4].score), True, pygame.Color("dodgerblue"))
+        score6 = self.font.render("Name: " + scores[5].name + " score: " + str(scores[5].score), True, pygame.Color("dodgerblue"))
+        score7 = self.font.render("Name: " + scores[6].name + " score: " + str(scores[6].score), True, pygame.Color("dodgerblue"))
+        score8 = self.font.render("Name: " + scores[7].name + " score: " + str(scores[7].score), True, pygame.Color("dodgerblue"))
+        score9 = self.font.render("Name: " + scores[8].name + " score: " + str(scores[8].score), True, pygame.Color("dodgerblue"))
+        score10 = self.font.render("Name: " + scores[9].name + " score: " + str(scores[9].score), True, pygame.Color("dodgerblue"))
+
+        surface.blit(score1, [120, 120, 240, 240])
+        surface.blit(score2, [120, 140, 240, 240])
+        surface.blit(score3, [120, 160, 240, 240])
+        surface.blit(score4, [120, 180, 240, 240])
+        surface.blit(score5, [120, 200, 240, 240])
+        surface.blit(score6, [120, 220, 240, 240])
+        surface.blit(score7, [120, 240, 240, 240])
+        surface.blit(score8, [120, 260, 240, 240])
+        surface.blit(score9, [120, 280, 240, 240])
+        surface.blit(score10, [120, 300, 240, 240])
         # display.flip() will update only a portion of the
         # screen to updated, not full area
         pygame.display.flip()
@@ -150,6 +176,7 @@ class GameOverScreen(GameState):
             self.quit = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
+                highScore.addhighscore(self.user_text, score)
                 game.flip_state()
                 # Check for backspace
             if event.key == pygame.K_BACKSPACE:
