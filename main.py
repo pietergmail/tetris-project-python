@@ -1,3 +1,4 @@
+import configparser
 import sys
 import pygame
 import pygame.display
@@ -13,6 +14,7 @@ GRAY = (128, 128, 128)
 clock = pygame.time.Clock()
 fps = 60
 
+input_map = {}
 
 class GameState(object):
     """
@@ -238,29 +240,29 @@ class Gameplay(GameState):
         if event.type == pygame.QUIT:
             self.quit = True
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
+            if event.key == input_map['drop']:
                 game.move_drop()
-            if event.key == pygame.K_DOWN:
+            if event.key == input_map['move_down']:
                 game.pressing_down = True
-            if event.key == pygame.K_LEFT:
+            if event.key == input_map['move_left']:
                 game.move_side(-1)
-            if event.key == pygame.K_RIGHT:
+            if event.key == input_map['move_right']:
                 game.move_side(1)
-            if event.key == pygame.K_SPACE:
+            if event.key == input_map['rotate']:
                 game.rotate()
-            if event.key == pygame.K_v:
+            if event.key == input_map['rev_rotate']:
                 game.revrotate()
-            if event.key == pygame.K_c:
+            if event.key == input_map['hold']:
                 game.hold()
             if event.key == pygame.K_ESCAPE:
                 self.done = True
-            if event.key == pygame.K_p:
+            if event.key == input_map['pause']:
                 self.next_state = "PAUSED"
                 self.done = True
 
         # check if key is held down, used to change dropping speed
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_DOWN:
+            if event.key == input_map['move_down']:
                 game.pressing_down = False
 
     def update(self, dt):
@@ -373,7 +375,45 @@ class Gameplay(GameState):
         pygame.display.flip()
 
 
+class Readinputs():
+    # initiate
+    config = configparser.ConfigParser()
+    # parse existing file
+    config.read('input.ini')
+
+    # read values from inputs
+    drop = config.get('inputs', 'drop')
+    move_down = config.get('inputs', 'move_down')
+    move_left = config.get('inputs', 'move_left')
+    move_right = config.get('inputs', 'move_right')
+    rotate = config.get('inputs', 'rotate')
+    rev_rotate = config.get('inputs', 'rev_rotate')
+    hold = config.get('inputs', 'hold')
+    pause = config.get('inputs', 'pause')
+
+    # change keys to pygame elements
+    drop = getattr(pygame, drop)
+    move_down = getattr(pygame, move_down)
+    move_left = getattr(pygame, move_left)
+    move_right = getattr(pygame, move_right)
+    rotate = getattr(pygame, rotate)
+    rev_rotate = getattr(pygame, rev_rotate)
+    hold = getattr(pygame, hold)
+    pause = getattr(pygame, pause)
+
+    # set to input_map
+    input_map['drop'] = drop
+    input_map['move_down'] = move_down
+    input_map['move_left'] = move_left
+    input_map['move_right'] = move_right
+    input_map['rotate'] = rotate
+    input_map['rev_rotate'] = rev_rotate
+    input_map['hold'] = hold
+    input_map['pause'] = pause
+
+
 if __name__ == "__main__":
+    Readinputs()
     pygame.init()
     score = 0
     size = (400, 500)
