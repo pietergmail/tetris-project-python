@@ -13,6 +13,7 @@ GRAY = (128, 128, 128)
 clock = pygame.time.Clock()
 fps = 60
 
+input_map = {'drop': pygame.K_UP, 'move down': pygame.K_DOWN, 'move left': pygame.K_LEFT, 'move right': pygame.K_RIGHT, 'rotate': pygame.K_SPACE, 'rev_rotate': pygame.K_v, 'hold': pygame.K_c, 'pause': pygame.K_p}
 
 class GameState(object):
     """
@@ -238,23 +239,23 @@ class Gameplay(GameState):
         if event.type == pygame.QUIT:
             self.quit = True
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
+            if event.key == input_map['drop']:
                 game.move_drop()
-            if event.key == pygame.K_DOWN:
+            if event.key == input_map['move down']:
                 game.pressing_down = True
-            if event.key == pygame.K_LEFT:
+            if event.key == input_map['move left']:
                 game.move_side(-1)
-            if event.key == pygame.K_RIGHT:
+            if event.key == input_map['move right']:
                 game.move_side(1)
-            if event.key == pygame.K_SPACE:
+            if event.key == input_map['rotate']:
                 game.rotate()
-            if event.key == pygame.K_v:
+            if event.key == input_map['rev_rotate']:
                 game.revrotate()
-            if event.key == pygame.K_c:
+            if event.key == input_map['hold']:
                 game.hold()
             if event.key == pygame.K_ESCAPE:
                 self.done = True
-            if event.key == pygame.K_p:
+            if event.key == input_map['pause']:
                 self.next_state = "PAUSED"
                 self.done = True
 
