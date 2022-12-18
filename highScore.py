@@ -1,3 +1,5 @@
+import firebase_database
+
 
 class Score:
     def __init__(self, name, score):
@@ -5,22 +7,19 @@ class Score:
         self.score = score
 
 
-# returns 10 highest scores in order (currently hardcoded)
+# gets the values from the database and makes them easier to work with for the pygame frontend
 def gethighscores():
-    scores = [Score("test1", 15),
-              Score("Test2", 14),
-              Score("Test3", 13),
-              Score("Test4", 12),
-              Score("Test5", 11),
-              Score("Test6", 10),
-              Score("Test7", 9),
-              Score("Test8", 8),
-              Score("Test9", 7),
-              Score("Test10", 6),
-              ]
+    # get the firebse values in dict form
+    scores_raw = firebase_database.gettingscores()
+
+    # setup list with scores
+    scores = []
+    for key in scores_raw:
+        scores.append(Score(scores_raw[key]["name"], scores_raw[key]["amount"]))
+
     return scores
 
 
 # adds high score to firebase (currently unimplemented)
 def addhighscore(name, score):
-    print("name: " + name + " has a score of " + str(score) + " points.")
+    firebase_database.addscore(name, score)
