@@ -2,6 +2,7 @@ import configparser
 import sys
 import pygame
 import pygame.display
+from pygame import mixer
 
 import highScore
 import figure
@@ -73,9 +74,17 @@ class TitleScreen(GameState):
         if event.type == pygame.QUIT:
             self.quit = True
         elif event.type == pygame.KEYUP:
+            mixer.init()
+            mixer.music.load('Tetris_Theme.mp3')
+            mixer.music.play()
+            pygame.mixer.music.play(-1)
             self.persist["screen_color"] = "gold"
             self.done = True
         elif event.type == pygame.MOUSEBUTTONUP:
+            mixer.init()
+            mixer.music.load('Tetris_Theme.mp3')
+            mixer.music.play()
+            pygame.mixer.music.play(-1)
             self.persist["screen_color"] = "dodgerblue"
             self.done = True
 
@@ -99,6 +108,7 @@ class PauseScreen(GameState):
             self.quit = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
+                mixer.music.unpause()
                 self.done = True
                 game.flip_state()
 
@@ -172,6 +182,9 @@ class GameOverScreen(GameState):
         # create rectangle
         self.input_rect = pygame.Rect(150, 280, 140, 32)
 
+    def startup(self, persistent):
+        mixer.music.fadeout(2000)
+        self.persist = persistent
     # continue on any button press
     def get_event(self, event):
         if event.type == pygame.QUIT:
@@ -257,6 +270,7 @@ class Gameplay(GameState):
             if event.key == pygame.K_ESCAPE:
                 self.done = True
             if event.key == input_map['pause']:
+                mixer.music.pause()
                 self.next_state = "PAUSED"
                 self.done = True
 
@@ -377,7 +391,7 @@ class Gameplay(GameState):
         pygame.display.flip()
 
 
-class Readinputs():
+def Readinputs():
     # initiate
     config = configparser.ConfigParser()
     # parse existing file
