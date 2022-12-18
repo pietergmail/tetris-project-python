@@ -5,7 +5,7 @@ import figure
 
 class Tetris(object):
     pressing_down = False
-    level = 2
+    level = 1
     score = 0
     field = []
     height = 0
@@ -137,6 +137,41 @@ class Tetris(object):
                     for j in range(self.width):
                         self.field[i1][j] = self.field[i1 - 1][j]
         self.score += lines ** 2
+        self.check_level()
+
+    # check what level we are currently on, used to determine speed, totally arbitrary code values
+    def check_level(self):
+        if self.score < 25:
+            self.level = 1
+        elif self.score < 65:
+            self.level = 2
+        elif self.score < 115:
+            self.level = 3
+        elif self.score < 175:
+            self.level = 4
+        elif self.score < 245:
+            self.level = 5
+        elif self.score < 325:
+            self.level = 6
+        elif self.score < 405:
+            self.level = 7
+        elif self.score < 485:
+            self.level = 8
+        elif self.score < 525:
+            self.level = 9
+        elif self.score < 605:
+            self.level = 10
+        elif self.score < 685:
+            self.level = 11
+        elif self.score < 765:
+            self.level = 12
+        elif self.score < 855:
+            self.level = 13
+        elif self.score < 895:
+            self.level = 14
+        elif self.score < 995:
+            self.level = 15
+
 
     # drop the piece instantly
     def move_drop(self):

@@ -268,7 +268,7 @@ class Gameplay(GameState):
     def update(self, dt):
         # move piece down every +- 200 ticks
         game.time_elapsed += dt
-        if game.time_elapsed/game.level > 200 or game.pressing_down:
+        if game.time_elapsed > 1500/game.level or game.pressing_down:
             game.time_elapsed = 0
             game.move_down()
 
@@ -364,9 +364,11 @@ class Gameplay(GameState):
 
         # set screen variables
         font = pygame.font.SysFont('Calibri', 25, True, False)
-        text = font.render("Score: " + str(game.score), True, BLACK)
+        score_text = font.render("Score: " + str(game.score), True, BLACK)
+        level_text = font.render("Level: " +  str(game.level), True, BLACK)
 
-        screen.blit(text, [0, 0])
+        screen.blit(score_text, [0, 0])
+        screen.blit(level_text, [150, 0])
 
         # may need to use persist, haven't figured it out yet
         global score
