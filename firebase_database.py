@@ -20,14 +20,14 @@ def addscore(name, amount):
 
 # -------------------------------------------------------------------------------- code block for getting data / values
 def gettingscores():
-    # getting 10 'last' values, ordening happens in ascending order!
-    # return object is ordered dictionary
-    # results = reference.order_by_child("amount").limit_to_last(10).get()
-    # printing results dictionary mostly for test purpose of correct data retrievement
-    # keeping in code for maybe later uses or in case of
-    # print(results)
-    # returning result object, possible ordered dictionary
-    return reference.order_by_child("amount").limit_to_last(10).get()
+    # setup a res dictionary
+    res = {}
+    # put the values in a dictionary, ordening happens in ascending order
+    for key, value in reference.order_by_child("amount").limit_to_last(10).get().items():
+        res[key] = value
+    # invert the dictionary so we have the 10 highest scores in descending order
+    inv_res = dict(reversed(res.items()))
+    return inv_res
 
 
 # ------------------------------------------------------------------ code block for setting up reference and connection
@@ -36,5 +36,6 @@ cred = credentials.Certificate("tetris-project-python-firebase-adminsdk-y0naf-04
 # initialising app making use of credentials and connecting with database
 app = firebase_admin.initialize_app(cred, {
     "databaseURL": "https://tetris-project-python-default-rtdb.europe-west1.firebasedatabase.app"})
+
 # getting reference of database using root collection
 reference = db.reference()
