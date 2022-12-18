@@ -3,8 +3,8 @@ import pygame
 import pygame.display
 from pygame import mixer
 
-import figure
 import highScore
+import figure
 import tetris
 
 BLACK = (0, 0, 0)
@@ -130,8 +130,10 @@ class PauseScreen(GameState):
 class HigscoreScreen(GameState):
     def __init__(self):
         super(HigscoreScreen, self).__init__()
-        self.title = self.font.render("HighScores: ", True, pygame.Color("dodgerblue"))
+        self.title = self.titleFont.render("HighScores: ", True, pygame.Color("dodgerblue"))
         self.persist["screen_color"] = "black"
+        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.title_rect.y = 50
 
         # create rectangle
         self.input_rect = pygame.Rect(150, 280, 140, 32)
@@ -161,7 +163,6 @@ class HigscoreScreen(GameState):
             score = self.font.render("Name: " + scores[x].name + " score: " + str(scores[x].score), True, pygame.Color("dodgerblue"))
             surface.blit(score, [95, i, 240, 240])
             i = i+30
-
 
         # display.flip() will update only a portion of the
         # screen to updated, not full area
@@ -219,8 +220,6 @@ class GameOverScreen(GameState):
         surface.blit(scoretext, [170, 10])
         surface.blit(self.title, self.title_rect)
 
-
-
         # basic font for user typed
         base_font = pygame.font.Font(None, 32)
 
@@ -233,12 +232,9 @@ class GameOverScreen(GameState):
         # render at position stated in arguments
         screen.blit(text_surface, (self.input_rect.x + 5, self.input_rect.y + 5))
 
-
         # set width of textfield so that text cannot get
         # outside of user's text input
         self.input_rect.w = max(100, text_surface.get_width() + 10)
-
-
 
         # display.flip() will update only a portion of the
         # screen to updated, not full area
