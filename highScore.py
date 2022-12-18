@@ -22,4 +22,4 @@ def gethighscores():
 
 # adds high score to firebase (currently unimplemented)
 def addhighscore(name, score):
-    print("name: " + name + " has a score of " + str(score) + " points.")
+    firebase_database.addscore(name, score)
