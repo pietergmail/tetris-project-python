@@ -1,3 +1,4 @@
+import configparser
 import sys
 import pygame
 import pygame.display
@@ -31,7 +32,7 @@ class GameState(object):
         self.font = pygame.font.Font('fonts/Open 24 Display St.ttf', 24)
 
 
-def startup(self, persistent):
+    def startup(self, persistent):
         """
         Called when a state resumes being active.
         Allows information to be passed between states.
@@ -235,6 +236,8 @@ class GameOverScreen(GameState):
         # set width of textfield so that text cannot get
         # outside of user's text input
         self.input_rect.w = max(100, text_surface.get_width() + 10)
+
+
 
         # display.flip() will update only a portion of the
         # screen to updated, not full area
