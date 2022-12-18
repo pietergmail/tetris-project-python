@@ -7,6 +7,8 @@ Basic python game made in python
 - hold button
 - remappable controls
 - online high-scores
+- 15 different difficulty levels
+- theme music
 
 ## control remapping
 to remap the controls change the [input.ini](https://github.com/pietergmail/tetris-project-python/blob/main/input.ini) file. The keys are based on the pygame keys from [Pygame Keyboard Codes](https://elearn.ellak.gr/mod/page/view.php?id=2786).
