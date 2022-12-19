@@ -195,15 +195,21 @@ class HigscoreScreen(GameState):
 
         i = 100
         for x in range(10):
-            scoreText = "Name: " + scores[x].name + " score: " + str(scores[x].score)
-            snip = self.font.render(scoreText[0:self.counters[x]+5], True, scoreColors[x])
-            surface.blit(snip, [95, i, 240, 240])
+            scoreText1 = "Name: " + scores[x].name
+            scoreText2 = " score: " + str(scores[x].score)
+            snip1 = self.font.render(scoreText1[0:self.counters[x]+5], True, scoreColors[x])
+            snip2 = self.font.render(scoreText2[0:self.counters[x]+7], True, scoreColors[x])
+            surface.blit(snip1, [80, i, 240, 240])
+            surface.blit(snip2, [220, i, 240, 240])
+            
+            
             i = i+30
 
-            if self.counters[x] < len(scoreText):
+            if self.counters[x] < len(scoreText1):
                 self.counters[x] += 1
             else:
-                self.counters[x] = len(scoreText)
+                self.counters[x] = len(scoreText1)
+                
 
 
         '''
