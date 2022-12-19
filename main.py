@@ -30,6 +30,7 @@ class GameState(object):
         self.persist = {}
         self.titleFont = pygame.font.Font('fonts/ka1.ttf', 24)
         self.font = pygame.font.Font('fonts/Open 24 Display St.ttf', 24)
+        
 
 
     def startup(self, persistent):
@@ -66,10 +67,14 @@ class GameState(object):
 class TitleScreen(GameState):
     def __init__(self):
         super(TitleScreen, self).__init__()
-        self.title = self.titleFont.render("Python tetris.py", True, pygame.Color("dodgerblue"))
+        self.titleText = "Python tetris.py"
+        self.title = self.titleFont.render(self.titleText, True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.persist["screen_color"] = "black"
         self.next_state = "GAMEPLAY"
+        self.snip = self.font.render('', True,'white')
+        self.counter = 0
+        self.colorCounter = 0
 
     # continue on any button press
     def get_event(self, event):
@@ -98,7 +103,22 @@ class TitleScreen(GameState):
         titleImage = pygame.transform.scale(titleImage, (400, 500))
         surface.blit(titleImage, ( 0,0))
 
-        surface.blit(self.title, self.title_rect)
+        ## Scroll through letters in title and blit to screen
+        self.snip = self.titleFont.render(self.titleText[0:self.counter], True, figure.colors[self.colorCounter])
+        surface.blit(self.snip, self.title_rect)
+
+        if self.counter < len(self.titleText):
+            self.counter += 1
+        else:
+            self.counter = len(self.titleText)
+        
+        if self.colorCounter < 7:
+            self.colorCounter += 1
+        else:
+            self.colorCounter = 0
+
+        
+        
 
 
 class PauseScreen(GameState):
@@ -135,6 +155,7 @@ class HigscoreScreen(GameState):
         self.persist["screen_color"] = "black"
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.title_rect.y = 50
+        self.counters = [0,0,0,0,0,0,0,0,0,0]
 
         # create rectangle
         self.input_rect = pygame.Rect(150, 280, 140, 32)
@@ -158,12 +179,40 @@ class HigscoreScreen(GameState):
         # Get the highscores
         scores = highScore.gethighscores()
 
+        # Set colors to use for high score text
+        scoreColors=[pygame.Color("gold"),
+                    pygame.Color("silver"),
+                    pygame.Color("chocolate3"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue")]
+
         # create scores text for the 10 entries
+
+        i = 100
+        for x in range(10):
+            scoreText = "Name: " + scores[x].name + " score: " + str(scores[x].score)
+            snip = self.font.render(scoreText[0:self.counters[x]+5], True, scoreColors[x])
+            surface.blit(snip, [95, i, 240, 240])
+            i = i+30
+
+            if self.counters[x] < len(scoreText):
+                self.counters[x] += 1
+            else:
+                self.counters[x] = len(scoreText)
+
+
+        '''
         i = 100
         for x in range(10):
             score = self.font.render("Name: " + scores[x].name + " score: " + str(scores[x].score), True, pygame.Color("dodgerblue"))
             surface.blit(score, [95, i, 240, 240])
             i = i+30
+        '''
 
         # display.flip() will update only a portion of the
         # screen to updated, not full area
@@ -386,8 +435,8 @@ class Gameplay(GameState):
 
         # set screen variables
         font = pygame.font.SysFont('Calibri', 25, True, False)
-        level_text = font.render("Level: " +  str(game.level), True, BLACK)
-        score_text = font.render("Score: " + str(game.score), True, GRAY)
+        level_text = self.font.render("Level: " +  str(game.level), True, GRAY)
+        score_text = self.font.render("Score: " + str(game.score), True, GRAY)
 
         screen.blit(score_text, [0, 0])
         screen.blit(level_text, [150, 0])
