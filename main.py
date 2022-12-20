@@ -171,7 +171,7 @@ class HigscoreScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
-        titleImage = pygame.image.load("images/titleImage.jpg").convert()
+        titleImage = pygame.image.load("images/titleImage_resized.jpg").convert()
         titleImage = pygame.transform.scale(titleImage, (400, 500))
         surface.blit(titleImage, ( 0,0))
         surface.blit(self.title, self.title_rect)
@@ -197,8 +197,8 @@ class HigscoreScreen(GameState):
         for x in range(10):
             scoreText1 = "Name: " + scores[x].name
             scoreText2 = " score: " + str(scores[x].score)
-            snip1 = self.font.render(scoreText1[0:self.counters[x]+5], True, scoreColors[x])
-            snip2 = self.font.render(scoreText2[0:self.counters[x]+7], True, scoreColors[x])
+            snip1 = self.font.render(scoreText1[0:self.counters[x]], True, scoreColors[x])
+            snip2 = self.font.render(scoreText2[0:self.counters[x]], True, scoreColors[x])
             surface.blit(snip1, [80, i, 240, 240])
             surface.blit(snip2, [220, i, 240, 240])
             
