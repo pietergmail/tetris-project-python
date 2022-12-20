@@ -155,7 +155,8 @@ class HigscoreScreen(GameState):
         self.persist["screen_color"] = "black"
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.title_rect.y = 50
-        self.counters = [0,0,0,0,0,0,0,0,0,0]
+        self.nameCounters = [0,0,0,0,0,0,0,0,0,0]
+        self.scoreCounters = [0,0,0,0,0,0,0,0,0,0]
 
         # create rectangle
         self.input_rect = pygame.Rect(150, 280, 140, 32)
@@ -192,33 +193,29 @@ class HigscoreScreen(GameState):
                     pygame.Color("dodgerblue")]
 
         # create scores text for the 10 entries
-
+        
         i = 100
         for x in range(10):
             scoreText1 = "Name: " + scores[x].name
             scoreText2 = " score: " + str(scores[x].score)
-            snip1 = self.font.render(scoreText1[0:self.counters[x]], True, scoreColors[x])
-            snip2 = self.font.render(scoreText2[0:self.counters[x]], True, scoreColors[x])
+            snip1 = self.font.render(scoreText1[0:self.nameCounters[x]], True, scoreColors[x])
+            snip2 = self.font.render(scoreText2[0:self.scoreCounters[x]], True, scoreColors[x])
             surface.blit(snip1, [80, i, 240, 240])
             surface.blit(snip2, [220, i, 240, 240])
             
             
             i = i+30
 
-            if self.counters[x] < len(scoreText1):
-                self.counters[x] += 1
+            if self.nameCounters[x] < len(scoreText1):
+                self.nameCounters[x] += 1
             else:
-                self.counters[x] = len(scoreText1)
+                self.nameCounters[x] = len(scoreText1)
+
+            if self.scoreCounters[x] < len(scoreText2):
+                self.scoreCounters[x] += 1
+            else:
+                self.scoreCounters[x] = len(scoreText2)
                 
-
-
-        '''
-        i = 100
-        for x in range(10):
-            score = self.font.render("Name: " + scores[x].name + " score: " + str(scores[x].score), True, pygame.Color("dodgerblue"))
-            surface.blit(score, [95, i, 240, 240])
-            i = i+30
-        '''
 
         # display.flip() will update only a portion of the
         # screen to updated, not full area
