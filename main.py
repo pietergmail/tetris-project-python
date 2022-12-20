@@ -355,9 +355,16 @@ class Gameplay(GameState):
     def draw(self, surface):
         # set background color
         screen.fill(WHITE)
-        backgroundImage = pygame.image.load("images/background.jpg").convert()
+        backgroundImage = pygame.image.load("images/background.png").convert()
         backgroundImage = pygame.transform.scale(backgroundImage, (400, 500))
         surface.blit(backgroundImage, ( 0,0))
+
+        # set black backgrounds for grids
+        pygame.draw.rect(surface, BLACK, pygame.Rect(100, 60, 200, 400))
+        pygame.draw.rect(surface, BLACK, pygame.Rect(20, 60, 60, 80))
+        pygame.draw.rect(surface, BLACK, pygame.Rect(320, 60, 60, 80))
+        pygame.draw.rect(surface, BLACK, pygame.Rect(320, 160, 60, 80))
+        pygame.draw.rect(surface, BLACK, pygame.Rect(320, 260, 60, 80))
 
         # draw the grid
         for i in range(game.height):
@@ -444,8 +451,17 @@ class Gameplay(GameState):
         level_text = self.font.render("Level: " +  str(game.level), True, GRAY)
         score_text = self.font.render("Score: " + str(game.score), True, GRAY)
 
-        screen.blit(score_text, [0, 0])
-        screen.blit(level_text, [150, 0])
+        # Set black backgrounds for score and level text and blit to screen
+        level_text_surface = pygame.Surface(level_text.get_size())
+        level_text_surface.fill((BLACK))
+        level_text_surface.blit(level_text, (0, 0))
+        screen.blit(level_text_surface, [150, 0])
+
+        score_text_surface = pygame.Surface(score_text.get_size())
+        score_text_surface.fill((BLACK))
+        score_text_surface.blit(score_text, (0, 0))
+        screen.blit(score_text_surface, [0, 0])
+        
 
         # may need to use persist, haven't figured it out yet
         global score
