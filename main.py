@@ -28,7 +28,10 @@ class GameState(object):
         self.next_state = None
         self.screen_rect = pygame.display.get_surface().get_rect()
         self.persist = {}
-        self.font = pygame.font.Font(None, 24)
+        self.titleFont = pygame.font.Font('fonts/ka1.ttf', 24)
+        self.font = pygame.font.Font('fonts/Open 24 Display St.ttf', 24)
+        
+
 
     def startup(self, persistent):
         """
@@ -64,10 +67,14 @@ class GameState(object):
 class TitleScreen(GameState):
     def __init__(self):
         super(TitleScreen, self).__init__()
-        self.title = self.font.render("Python tetris.py", True, pygame.Color("dodgerblue"))
+        self.titleText = "Python tetris.py"
+        self.title = self.titleFont.render(self.titleText, True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
         self.persist["screen_color"] = "black"
         self.next_state = "GAMEPLAY"
+        self.snip = self.font.render('', True,'white')
+        self.counter = 0
+        self.colorCounter = 0
 
     # continue on any button press
     def get_event(self, event):
@@ -91,7 +98,27 @@ class TitleScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
-        surface.blit(self.title, self.title_rect)
+        # Add background image to tile screen
+        titleImage = pygame.image.load("images/titleImage.jpg").convert()
+        titleImage = pygame.transform.scale(titleImage, (400, 500))
+        surface.blit(titleImage, ( 0,0))
+
+        ## Scroll through letters in title and blit to screen
+        self.snip = self.titleFont.render(self.titleText[0:self.counter], True, figure.colors[self.colorCounter])
+        surface.blit(self.snip, self.title_rect)
+
+        if self.counter < len(self.titleText):
+            self.counter += 1
+        else:
+            self.counter = len(self.titleText)
+        
+        if self.colorCounter < 7:
+            self.colorCounter += 1
+        else:
+            self.colorCounter = 0
+
+        
+        
 
 
 class PauseScreen(GameState):
@@ -115,14 +142,21 @@ class PauseScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
+        pauseImage = pygame.image.load("images/titleImage.jpg").convert()
+        pauseImage = pygame.transform.scale(pauseImage, (400, 500))
+        surface.blit(pauseImage, ( 0,0))
         surface.blit(self.title, self.title_rect)
 
 
 class HigscoreScreen(GameState):
     def __init__(self):
         super(HigscoreScreen, self).__init__()
-        self.title = self.font.render("HighScores: ", True, pygame.Color("dodgerblue"))
+        self.title = self.titleFont.render("HighScores: ", True, pygame.Color("dodgerblue"))
         self.persist["screen_color"] = "black"
+        self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.title_rect.y = 50
+        self.nameCounters = [0,0,0,0,0,0,0,0,0,0]
+        self.scoreCounters = [0,0,0,0,0,0,0,0,0,0]
 
         # create rectangle
         self.input_rect = pygame.Rect(150, 280, 140, 32)
@@ -138,33 +172,51 @@ class HigscoreScreen(GameState):
     # renders the screen
     def draw(self, surface):
         surface.fill(pygame.Color("black"))
-        surface.blit(self.title, [160, 100, 240, 240])
+        titleImage = pygame.image.load("images/titleImage_resized.jpg").convert()
+        titleImage = pygame.transform.scale(titleImage, (400, 500))
+        surface.blit(titleImage, ( 0,0))
+        surface.blit(self.title, self.title_rect)
 
         # Get the highscores
         scores = highScore.gethighscores()
 
-        # create scores text for the 10 entries
-        score1 = self.font.render("Name: " + scores[0].name + " score: " + str(scores[0].score), True, pygame.Color("dodgerblue"))
-        score2 = self.font.render("Name: " + scores[1].name + " score: " + str(scores[1].score), True, pygame.Color("dodgerblue"))
-        score3 = self.font.render("Name: " + scores[2].name + " score: " + str(scores[2].score), True, pygame.Color("dodgerblue"))
-        score4 = self.font.render("Name: " + scores[3].name + " score: " + str(scores[3].score), True, pygame.Color("dodgerblue"))
-        score5 = self.font.render("Name: " + scores[4].name + " score: " + str(scores[4].score), True, pygame.Color("dodgerblue"))
-        score6 = self.font.render("Name: " + scores[5].name + " score: " + str(scores[5].score), True, pygame.Color("dodgerblue"))
-        score7 = self.font.render("Name: " + scores[6].name + " score: " + str(scores[6].score), True, pygame.Color("dodgerblue"))
-        score8 = self.font.render("Name: " + scores[7].name + " score: " + str(scores[7].score), True, pygame.Color("dodgerblue"))
-        score9 = self.font.render("Name: " + scores[8].name + " score: " + str(scores[8].score), True, pygame.Color("dodgerblue"))
-        score10 = self.font.render("Name: " + scores[9].name + " score: " + str(scores[9].score), True, pygame.Color("dodgerblue"))
+        # Set colors to use for high score text
+        scoreColors=[pygame.Color("gold"),
+                    pygame.Color("silver"),
+                    pygame.Color("chocolate3"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue"),
+                    pygame.Color("dodgerblue")]
 
-        surface.blit(score1, [120, 120, 240, 240])
-        surface.blit(score2, [120, 140, 240, 240])
-        surface.blit(score3, [120, 160, 240, 240])
-        surface.blit(score4, [120, 180, 240, 240])
-        surface.blit(score5, [120, 200, 240, 240])
-        surface.blit(score6, [120, 220, 240, 240])
-        surface.blit(score7, [120, 240, 240, 240])
-        surface.blit(score8, [120, 260, 240, 240])
-        surface.blit(score9, [120, 280, 240, 240])
-        surface.blit(score10, [120, 300, 240, 240])
+        # create scores text for the 10 entries
+        
+        i = 100
+        for x in range(10):
+            scoreText1 = "Name: " + scores[x].name
+            scoreText2 = " score: " + str(scores[x].score)
+            snip1 = self.font.render(scoreText1[0:self.nameCounters[x]], True, scoreColors[x])
+            snip2 = self.font.render(scoreText2[0:self.scoreCounters[x]], True, scoreColors[x])
+            surface.blit(snip1, [80, i, 240, 240])
+            surface.blit(snip2, [220, i, 240, 240])
+            
+            
+            i = i+30
+
+            if self.nameCounters[x] < len(scoreText1):
+                self.nameCounters[x] += 1
+            else:
+                self.nameCounters[x] = len(scoreText1)
+
+            if self.scoreCounters[x] < len(scoreText2):
+                self.scoreCounters[x] += 1
+            else:
+                self.scoreCounters[x] = len(scoreText2)
+                
+
         # display.flip() will update only a portion of the
         # screen to updated, not full area
         pygame.display.flip()
@@ -173,14 +225,15 @@ class HigscoreScreen(GameState):
 class GameOverScreen(GameState):
     def __init__(self):
         super(GameOverScreen, self).__init__()
-        self.title = self.font.render("Game Over, press enter name: ", True, pygame.Color("dodgerblue"))
+        self.title = self.font.render("Enter your name to save your score:", True, pygame.Color("dodgerblue"))
         self.title_rect = self.title.get_rect(center=self.screen_rect.center)
+        self.title_rect.y = 100
         self.persist["screen_color"] = "black"
         self.user_text = ""
         self.next_state = "HIGHSCORE"
 
         # create rectangle
-        self.input_rect = pygame.Rect(150, 280, 140, 32)
+        self.input_rect = pygame.Rect(150, 230, 140, 32)
 
     def startup(self, persistent):
         mixer.music.fadeout(2000)
@@ -213,9 +266,11 @@ class GameOverScreen(GameState):
     # renders the screen
     def draw(self, surface):
         scoretext = self.font.render("Score: " + str(score), True, pygame.Color("dodgerblue"))
-
         surface.fill(pygame.Color("black"))
-        surface.blit(scoretext, [170, 200])
+        gameOverImage = pygame.image.load("images/gameOver.png").convert()
+        gameOverImage = pygame.transform.scale(gameOverImage, (400, 500))
+        surface.blit(gameOverImage, ( 0,0))
+        surface.blit(scoretext, [170, 10])
         surface.blit(self.title, self.title_rect)
 
         # basic font for user typed
@@ -233,6 +288,8 @@ class GameOverScreen(GameState):
         # set width of textfield so that text cannot get
         # outside of user's text input
         self.input_rect.w = max(100, text_surface.get_width() + 10)
+
+
 
         # display.flip() will update only a portion of the
         # screen to updated, not full area
@@ -295,6 +352,16 @@ class Gameplay(GameState):
     def draw(self, surface):
         # set background color
         screen.fill(WHITE)
+        backgroundImage = pygame.image.load("images/background.png").convert()
+        backgroundImage = pygame.transform.scale(backgroundImage, (400, 500))
+        surface.blit(backgroundImage, ( 0,0))
+
+        # set black backgrounds for grids
+        pygame.draw.rect(surface, BLACK, pygame.Rect(100, 60, 200, 400))
+        pygame.draw.rect(surface, BLACK, pygame.Rect(20, 60, 60, 80))
+        pygame.draw.rect(surface, BLACK, pygame.Rect(320, 60, 60, 80))
+        pygame.draw.rect(surface, BLACK, pygame.Rect(320, 160, 60, 80))
+        pygame.draw.rect(surface, BLACK, pygame.Rect(320, 260, 60, 80))
 
         # draw the grid
         for i in range(game.height):
@@ -378,11 +445,20 @@ class Gameplay(GameState):
 
         # set screen variables
         font = pygame.font.SysFont('Calibri', 25, True, False)
-        score_text = font.render("Score: " + str(game.score), True, BLACK)
-        level_text = font.render("Level: " +  str(game.level), True, BLACK)
+        level_text = self.font.render("Level: " +  str(game.level), True, GRAY)
+        score_text = self.font.render("Score: " + str(game.score), True, GRAY)
 
-        screen.blit(score_text, [0, 0])
-        screen.blit(level_text, [150, 0])
+        # Set black backgrounds for score and level text and blit to screen
+        level_text_surface = pygame.Surface(level_text.get_size())
+        level_text_surface.fill((BLACK))
+        level_text_surface.blit(level_text, (0, 0))
+        screen.blit(level_text_surface, [150, 0])
+
+        score_text_surface = pygame.Surface(score_text.get_size())
+        score_text_surface.fill((BLACK))
+        score_text_surface.blit(score_text, (0, 0))
+        screen.blit(score_text_surface, [0, 0])
+        
 
         # may need to use persist, haven't figured it out yet
         global score
